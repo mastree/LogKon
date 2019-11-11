@@ -1,5 +1,5 @@
 :- include('util.pl').
-:- include('11nov.pl').
+:- include('move.pl').
  
 /*:- dynamic(deadzone/1).*/
 :- dynamic(lebarPeta/1).
