@@ -17,8 +17,8 @@ addInventori(A,B,C,D,E) :-
 	maxInventori(Max),
 	Panjang + 1 > Max, !, fail.
 
-addInventori(Nama, Tipe, Level, Nyawa, Rarity) :-
-	asserta(inventori(Nama, Tipe, Level, Nyawa, Rarity)),!.
+addInventori(Nama, Tipe, Damage, Nyawa, Rarity) :-
+	asserta(inventori(Nama, Tipe, Damage, Nyawa, Rarity)),!.
 
 delInventori(Nama) :-
 	retract(inventori(Nama, _, _, _, _)),!.
@@ -31,6 +31,6 @@ printStatus :-
 	forall(legendaryTokemon(F,G,H,I,J), printTokemon(F,G,H,I,J)).
 
 printTokemon(Nama, Tipe, _, Nyawa, _) :-
-	write(''), write(Nama), nl,
+	write(Nama), nl,
 	write('Health : '), write(Nyawa), nl,
 	write('Tipe : '), write(Tipe), nl, nl.
