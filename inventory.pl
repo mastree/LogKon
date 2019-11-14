@@ -1,16 +1,10 @@
 :- dynamic(inventori/5).
-:- dynamic(legendaryTokemon/5).
+:- dynamic(legendaryTokemon/7).
 :- dynamic(maxInventori/1).
 
 currentInventoryLength(Length) :-
 	findall(A, inventori(A, _, _, _, _), ListLength),
-	length(ListLength, Length).
-
-init_game :-
-	asserta(legendaryTokemon('Rinalmon', 'IRK', 1000, 13518005, 'Legendary')),
-	asserta(legendaryTokemon('Sangemon', 'Sister', 6969, 13517101, 'Legendary')),
-	asserta(inventori('Pikachu', 'Listrik', 1, 100, 'Normal')),
-	asserta(maxInventori(6)),!.
+	length(ListLength, Length), !.
 
 addInventori(A,B,C,D,E) :-
 	currentInventoryLength(Panjang),
