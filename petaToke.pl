@@ -1,3 +1,4 @@
+/* :- include('inventory.pl'). */
 :- include('util.pl').
 /*:- include('move.pl').*/
  
@@ -9,14 +10,16 @@
 :- dynamic(gymPos/2). /* (i,j) = (x,y) */
 :- dynamic(mapStatus/1).
 :- dynamic(player/2).
- 
+:- dynamic(enemy_tokemon/2).
+
 init_map :-
     asserta(player(1,1)),
     random(10,21,X),
     random(10,21,Y),
     asserta(lebarPeta(X)),asserta(tinggiPeta(Y)),
     asserta(mapStatus(1)),
-    generateTerrain,!.
+    generateTerrain,
+    init_enemy_tokemon_placement, !.
  
 /*isMapAset(G).*/
 isTerrain('-').
@@ -24,7 +27,7 @@ isTerrain('X').
 isWall('X').
    
 printMap(X,Y) :-
-    player(X,Y), !, write('P').
+    player(X,Y), \+ (gymPos(X,Y)), !, write('P').
 printMap(X,Y) :-
     terrain(X,Y,Isi), write(Isi).
  
@@ -40,7 +43,7 @@ generateTerrain:-
     random(XMin, Xp, Gx),
     random(YMin, Yp, Gy),
     asserta(gymPos(Gx,Gy)),
-    asserta(terrain(I,J,'G')),
+    asserta(terrain(Gx,Gy,'G')),
     forall(between(0,Yp,J), (
         asserta(terrain(0,J,'X')),
         asserta(terrain(Xp,J,'X'))
@@ -103,7 +106,7 @@ w :-
 	write([X,NewY]),nl,
 	asserta(player(X,NewY)),
 	write('Anda bergerak ke arah utara'),nl,
-	/* check ketemu pokemon atau kagak */!.
+	/* check ketemu pokemon atau kagak */ !.
 
 a :-
     player(X,Y),
@@ -120,7 +123,7 @@ a :-
 	write([NewX,Y]),nl,
 	asserta(player(NewX,Y)),
 	write('Anda bergerak ke arah barat'),nl,
-	/* check ketemu pokemon atau kagak */!.
+	/* check ketemu pokemon atau kagak */ !.
 
 s :-
 	player(X,Y),
@@ -138,7 +141,7 @@ s :-
 	write([X,NewY]),nl,
 	asserta(player(X,NewY)),
 	write('Anda bergerak ke arah selatan'),nl,
-	/* check ketemu pokemon atau kagak */!.
+	/* check ketemu pokemon atau kagak */ !.
 d :-
 	player(X,Y),
     Xnew is X+1,
@@ -155,4 +158,101 @@ d :-
 	write([NewX,Y]),nl,
 	asserta(player(NewX,Y)),
 	write('Anda bergerak ke arah timur'),nl,
-	/* check ketemu pokemon atau kagak */!.
+	/* check ketemu pokemon atau kagak */ !.
+
+
+/*
+loads(_) :-
+	gameMain(_),
+	write('Kamu tidak bisa memulai game lainnya ketika ada game yang sudah dimulai.'), nl, !.
+*/
+
+loads(FileName):-
+	\+file_exists(FileName),
+	write('File tersebut tidak ada.'), nl, !.
+loads(FileName):-
+	open(FileName, read, Str),
+    read_file_lines(Str,Lines),
+    close(Str),
+    assertaList(Lines), !.
+
+/*
+save(_):-
+	\+gameMain(_),
+	write('Command ini hanya bisa dipakai setelah game dimulai.'), nl,
+	write('Gunakan command "start." untuk memulai game.'), nl, !.
+*/
+
+save(FileName):-
+	tell(FileName),
+		player(X,Y),
+		write(player(X,Y)),write('.'),nl,
+        gymPos(Gx,Gy),
+        write(gymPos(Gx,Gy)),write('.'),nl,
+        lebarPeta(Lebar),
+        write(lebarPeta(Lebar)),write('.'),nl,
+        tinggiPeta(Tinggi),
+        write(tinggiPeta(Tinggi)),write('.'),nl,
+        mapStatus(Stat),
+        write(mapStatus(Stat)),write('.'),nl,
+		writeTerrain,
+	told, !.
+
+
+writeTerrain:-
+	\+terrain(_,_,_),
+	!.
+writeTerrain:-
+	forall(terrain(X,Y,Na),(
+		write('terrain('),write(X),write(','),
+        write(Y),write(',\''),write(Na),write('\')'),write('.'), nl
+	)), !.
+
+/* Read dari file eksternal */
+readData(S,[]) :-
+	at_end_of_stream(S), !.
+
+readData(S,[X1|Tail]) :-
+	get_char(S,X1),
+	readData(S,Tail).
+
+baca_file(NamaFile,Isi) :-
+	open(NamaFile,read,S),
+	repeat,
+	readData(S,Isi),
+	close(S),!.
+
+/* Membaca file menjadi list of lines */
+read_file_lines(Stream,[]) :-
+    at_end_of_stream(Stream).
+
+read_file_lines(Stream,[X|L]) :-
+    \+ at_end_of_stream(Stream),
+    read(Stream,X),
+    read_file_lines(Stream,L).
+/*-----------------------------*/
+/* Write ke file eksternal */
+writeData(_,[]) :- !.
+writeData(S,[X1|Tail]) :-
+	write(S,X1),
+	writeData(S,Tail).
+
+write_list(NamaFile,L) :-
+	open(NamaFile,write,S),
+	repeat,
+	writeData(S,L),
+	close(S).
+/*-----------------------------*/
+retractTerrain :-
+    \+terrain(_,_,_),
+    !.
+retractTerrain :-
+    retract(terrain(_,_,_)),
+    retractTerrain, !.
+quit :-
+    retract(lebarPeta(_)),
+    retract(tinggiPeta(_)),
+    retractTerrain,
+    retract(gymPos(_,_)),
+    retract(mapStatus(_)),
+    retract(player(_,_)), !.
