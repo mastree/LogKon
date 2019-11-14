@@ -1,5 +1,6 @@
 :- include('inventory.pl').
 :- include('util.pl').
+:- include('battle.pl').
 /*:- include('move.pl').*/
  
 /*:- dynamic(deadzone/1).*/
