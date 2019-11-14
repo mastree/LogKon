@@ -1,4 +1,4 @@
-/* :- include('inventory.pl'). */
+:- include('inventory.pl').
 :- include('util.pl').
 /*:- include('move.pl').*/
  
@@ -10,7 +10,20 @@
 :- dynamic(gymPos/2). /* (i,j) = (x,y) */
 :- dynamic(mapStatus/1).
 :- dynamic(player/2).
-:- dynamic(enemy_tokemon/2).
+
+
+update_nearby :-
+    player(X,Y),
+    \+gymPos(X,Y),
+    /* di sini harusnya cek ada pokemon Legendary atau gak */
+    random(0,100,I),
+    (I < 5,
+    startbattle);
+    (I >= 5), !.
+
+update_nearby :-
+    write('Anda sedang berada di gym!'), nl, !.
+    
 
 init_map :-
     asserta(player(1,1)),
@@ -19,7 +32,7 @@ init_map :-
     asserta(lebarPeta(X)),asserta(tinggiPeta(Y)),
     asserta(mapStatus(1)),
     generateTerrain,
-    init_enemy_tokemon_placement, !.
+    !.
  
 /*isMapAset(G).*/
 isTerrain('-').
@@ -40,10 +53,30 @@ generateTerrain:-
     YMax is T,
     Xp is (L+1),
     Yp is (T+1),
-    random(XMin, Xp, Gx),
-    random(YMin, Yp, Gy),
-    asserta(gymPos(Gx,Gy)),
+
+    Gx is div(L,2),
+    Gy is div(T,2),
+    asserta(gymPos(Gx,Gy)),    
     asserta(terrain(Gx,Gy,'G')),
+
+    Gxp is Gx+1,
+
+    random(XMin, Gx, Lx),
+    random(YMin, Yp, Ly),
+
+    random(Gxp, Xp, L2x),
+    random(YMin, Yp, L2y),
+
+/*
+    ((L2xtm /== Lx; L2ytm/== Ly),
+    L2x is L2xtm, L2y is L2ytm;
+    (L2xtm == Lx; L2ytm== Ly),
+    L2x is L2xtm, L2y is L2ytm+1),
+*/
+
+    asserta(legendaryTokemon('Rinalmon', 'IRK', 1000, 13518005, 'Legendary',Lx,Ly)),
+	asserta(legendaryTokemon('Sangemon', 'Sister', 6969, 13517101, 'Legendary',L2x,L2y)),
+
     forall(between(0,Yp,J), (
         asserta(terrain(0,J,'X')),
         asserta(terrain(Xp,J,'X'))
@@ -54,8 +87,7 @@ generateTerrain:-
     )),
     forall(between(YMin,YMax,J), (
         forall(between(XMin,XMax,I), (
-            ((I \== Gx;
-            J \== Gy),
+            ((\+ gymPos(I,J), \+ legendaryTokemon(_,_,_,_,_,I,J)),
             /*
             findall(Ter,isTerrain(Ter),ListTerrain),
             length(ListTerrain, Panjang),
@@ -67,10 +99,11 @@ generateTerrain:-
             asserta(terrain(I,J,'X'));
             Pick >= 1,
             asserta(terrain(I,J,'-'))));
-            (I == Gx;
-            J == Gy)
+            (gymPos(I,J);(legendaryTokemon(_,_,_,_,_,I,J), asserta(terrain(I,J,'L'))))
         ))
     )),
+    asserta(inventori('Pikachu', 'Listrik', 1, 100, 'Normal')),
+	asserta(maxInventori(6)),
     !.
  
 printMapAll:-
@@ -106,7 +139,7 @@ w :-
 	write([X,NewY]),nl,
 	asserta(player(X,NewY)),
 	write('Anda bergerak ke arah utara'),nl,
-	/* check ketemu pokemon atau kagak */ !.
+	update_nearby, !.
 
 a :-
     player(X,Y),
@@ -123,7 +156,7 @@ a :-
 	write([NewX,Y]),nl,
 	asserta(player(NewX,Y)),
 	write('Anda bergerak ke arah barat'),nl,
-	/* check ketemu pokemon atau kagak */ !.
+	update_nearby, !.
 
 s :-
 	player(X,Y),
@@ -141,7 +174,7 @@ s :-
 	write([X,NewY]),nl,
 	asserta(player(X,NewY)),
 	write('Anda bergerak ke arah selatan'),nl,
-	/* check ketemu pokemon atau kagak */ !.
+	update_nearby, !.
 d :-
 	player(X,Y),
     Xnew is X+1,
@@ -158,7 +191,7 @@ d :-
 	write([NewX,Y]),nl,
 	asserta(player(NewX,Y)),
 	write('Anda bergerak ke arah timur'),nl,
-	/* check ketemu pokemon atau kagak */ !.
+	update_nearby, !.
 
 
 /*
@@ -243,6 +276,12 @@ write_list(NamaFile,L) :-
 	writeData(S,L),
 	close(S).
 /*-----------------------------*/
+retractLegendaryTokemon :-
+    \+legendaryTokemon(_,_,_,_,_,_,_),
+    !.
+retractLegendaryTokemon :-
+    retract(legendaryTokemon(_,_,_,_,_,_,_)),
+    retractLegendaryTokemon, !.
 retractTerrain :-
     \+terrain(_,_,_),
     !.
@@ -253,6 +292,7 @@ quit :-
     retract(lebarPeta(_)),
     retract(tinggiPeta(_)),
     retractTerrain,
+    retractLegendaryTokemon,
     retract(gymPos(_,_)),
     retract(mapStatus(_)),
     retract(player(_,_)), !.
