@@ -75,8 +75,8 @@ generateTerrain:-
     L2x is L2xtm, L2y is L2ytm+1),
 */
 
-    asserta(legendaryTokemon('Rinalmon', 'IRK', 14000, 135180, 'Legendary',Lx,Ly)),
-	asserta(legendaryTokemon('Sangemon', 'Sister', 15000, 135171, 'Legendary',L2x,L2y)),
+    asserta(legendaryTokemon('rinalmon', 'fire', 14000, 135180, 'Legendary',Lx,Ly)),
+	asserta(legendaryTokemon('sangemon', 'water', 15000, 135171, 'Legendary',L2x,L2y)),
 
     forall(between(0,Yp,J), (
         asserta(terrain(0,J,'X')),
