@@ -20,10 +20,10 @@ insideGym:-
     player(X,Y),
     gymPos(X,Y).
 
-Heal :-
+heal :-
     mapStatus(_),
     insideGym,
-    forall(inventori(Name,_,_))
+    forall(inventori(_,_,_)).
 
 update_nearby :-
     player(X,Y),
@@ -35,11 +35,11 @@ update_nearby :-
     (I >= 5)), !.
 
 update_nearby :-
-    gymPos(X,Y),
+    gymPos(_,_),
     write('Anda sedang berada di gym!'), nl, !.
 
 update_nearby :-
-    legendaryTokemon(_,_,_,_,_,X,Y),
+    legendaryTokemon(_,_,_,_,_,_,_),
     startbattle.
     
 

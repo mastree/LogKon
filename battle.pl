@@ -3,6 +3,13 @@
 :- dynamic(picked/1).
 :- dynamic(enemy_pokemon/1).
 
+:- discontiguous startbattle/0.
+:- discontiguous run/0.
+:- discontiguous battle/0.
+:- discontiguous pick/1.
+:- discontiguous damage/1.
+:- discontiguous attack/0.
+
 startbattle :- 
     write('A wild Tokemon appears!'),nl,
     write('Fight or Run?').

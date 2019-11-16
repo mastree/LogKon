@@ -1,4 +1,10 @@
-start :- 
+:- include('battle.pl').
+:- include('move.pl').
+:- include('petaToke.pl').
+
+:- discontiguous init_game/0.
+
+init_game :- 
 	write(' ____  _____  _  _  ____  __  __  _____  _  _ '),nl,
 	write('(_  _)(  _  )( )/ )( ___)(  \\/  )(  _  )( \\( ) '), nl,
 	write('  )(   )(_)(  )  (  )__)  )    (  )(_)(  )  ( '), nl,
@@ -43,3 +49,5 @@ help :-
 	write(' -X = Pagar'),nl,
 	write(' -P = Player'),nl,
 	write(' -G = Gym'),nl.
+
+:- init_game.
