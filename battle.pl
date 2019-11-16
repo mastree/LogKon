@@ -97,11 +97,11 @@ attack :-
     write('to '),
     write(Nama),nl,
     NewCurrentNyawaM is CurrentNyawaM - RealDamage,
-    ((NewCurrentNyawaM <= 0,
+    ((NewCurrentNyawaM =< 0,
     retract(enemy(NamaMati,_,_,_)),
     write(NamaMati),
     write(' faints! Do you want to capture '),write(NamaMati),write('?'),
-    write(' capture/0 to capture '),write(NamaMati),write(', otherwise move away.')));
+    write(' capture/0 to capture '),write(NamaMati),write(', otherwise move away.'));
     (NewCurrentNyawaM > 0,
     asserta(enemy(Nama,TipeM,DamageM,NewCurrentNyawaM)),
     attackM)).
@@ -126,9 +126,9 @@ attackM :-
     write(Nama),
     nl,
     NewCurrentNyawa is CurrentNyawa - RealDamage,
-    ((NewCurrentNyawa <= 0,
+    ((NewCurrentNyawa =< 0,
     retract(inventori(_,_,_,_,_,_)));
     (NewCurrentNyawa > 0,
     asserta(inventori(Nama,Tipe,Damage,NewCurrentNyawa)))).
 
-specialAttack :-
+    
