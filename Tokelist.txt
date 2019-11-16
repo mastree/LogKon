@@ -1,0 +1,17 @@
+(Nama, Tipe, Damage, Nyawa, Rarity)
+'Megumin', 'Fire', 50, 30, 'Normal'
+'Charminder', 'Fire', 30, 60, 'Normal'
+'Ponita', 'Fire', 85, 50, 'Normal'
+'Plaeron', 'Fire', 80, 55, 'Normal'
+'Pepsiman', 'Water', 20, 70, 'Normal'
+'Squirtling', 'Water', 15, 65, 'Normal'
+'Squirtward', 'Water', 25, 80, 'Normal'
+'Aqua', 'Water', 1, 100, 'Normal'
+'Magicrap', 'Water', 100, 1, 'Normal'
+'Burbacok', 'Leaves', 10, 70, 'Normal'
+'Cannabon', 'Leaves', 15, 75, 'Normal'
+'Faithon', 'Leaves', 20, 65, 'Normal'
+'Shbeve', 'Leaves', 25, 65, 'Normal'
+'Bapak Kau', 'Normal', 50, 50, 'Normal'
+'Binomo', 'Normal', 1, 1000, 'Normal'
+

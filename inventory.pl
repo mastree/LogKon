@@ -2,6 +2,14 @@
 :- dynamic(legendaryTokemon/8).
 :- dynamic(maxInventori/1).
 
+:- discontiguous setNamaTipe/2.
+:- discontiguous currentInventoryLength/1.
+:- discontiguous addInventori/5.
+:- discontiguous delInventori/1.
+:- discontiguous printStatus/0.
+:- discontiguous printTokemon/6.
+:- discontiguous randTokemon/4.
+
 setNamaTipe(yuckmon, water).
 setNamaTipe(platypus, water).
 setNamaTipe(bragamon, fire).
@@ -13,7 +21,7 @@ currentInventoryLength(Length) :-
 	findall(A, inventori(A, _, _, _, _), ListLength),
 	length(ListLength, Length), !.
 
-addInventori(A,B,C,D,E,F) :-
+addInventori(_,_,_,_,_) :-
 	currentInventoryLength(Panjang),
 	maxInventori(Max),
 	Panjang + 1 > Max, !, fail.
