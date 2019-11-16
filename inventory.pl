@@ -1,4 +1,4 @@
-:- dynamic(inventori/5).
+:- dynamic(inventori/6).
 :- dynamic(legendaryTokemon/7).
 :- dynamic(maxInventori/1).
 
@@ -13,25 +13,26 @@ currentInventoryLength(Length) :-
 	findall(A, inventori(A, _, _, _, _), ListLength),
 	length(ListLength, Length), !.
 
-addInventori(A,B,C,D,E) :-
+addInventori(A,B,C,D,E,F) :-
 	currentInventoryLength(Panjang),
 	maxInventori(Max),
 	Panjang + 1 > Max, !, fail.
 
 addInventori(Nama, Tipe, Damage, Nyawa, Rarity) :-
-	asserta(inventori(Nama, Tipe, Damage, Nyawa, Rarity)),!.
+	MaxHP = Nyawa,
+	asserta(inventori(Nama, Tipe, Damage, Nyawa, MaxHP, Rarity)),!.
 
 delInventori(Nama) :-
-	retract(inventori(Nama, _, _, _, _)),!.
+	retract(inventori(Nama, _, _, _, _, _)),!.
 
 printStatus :-
 	write('Kisama no Tokemon :'),nl,nl,
-	forall(inventori(A,B,C,D,E), printTokemon(A,B,C,D,E)),
+	forall(inventori(A,B,C,D,E,F), printTokemon(A,B,C,D,E,F)),
 	write('================================='), nl,
 	nl, write('Lejenderi Tokemon :'), nl,nl,
-	forall(legendaryTokemon(F,G,H,I,J,_,_), printTokemon(F,G,H,I,J)).
+	forall(legendaryTokemon(F,G,H,I,J,K,_,_), printTokemon(F,G,H,I,J,K)).
 
-printTokemon(Nama, Tipe, _, Nyawa, _) :-
+printTokemon(Nama, Tipe, _, Nyawa, _, _) :-
 	write(Nama), nl,
 	write('Health : '), write(Nyawa), nl,
 	write('Tipe : '), write(Tipe), nl, nl.

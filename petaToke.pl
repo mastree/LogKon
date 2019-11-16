@@ -7,10 +7,23 @@
 :- dynamic(gymPos/2). /* (i,j) = (x,y) */
 :- dynamic(mapStatus/1).
 :- dynamic(player/2).
+:- dynamic(gameState/1).
+/* gameState menerima string dengan pilihan:
+    move : Lagi explore.
+    battle : Lagi battle. 
+    gym : Lagi di gym.
+    menang : Udah menang.
+    kalah : Udah kalah.
+*/
 
 insideGym:-
     player(X,Y),
     gymPos(X,Y).
+
+Heal :-
+    mapStatus(_),
+    insideGym,
+    forall(inventori(Name,_,_))
 
 update_nearby :-
     player(X,Y),
