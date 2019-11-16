@@ -1,5 +1,5 @@
 :- dynamic(inventori/6).
-:- dynamic(legendaryTokemon/7).
+:- dynamic(legendaryTokemon/8).
 :- dynamic(maxInventori/1).
 
 :- discontiguous setNamaTipe/2.
