@@ -32,7 +32,7 @@ help :-
 	write(' start. --start the game!'), nl,
 	write(' help. --show available commands'), nl,
 	write(' quit. --quit the game'), nl,
-	write(' n. s. e. w. --move'), nl,
+	write(' w. a. s. d. --move'), nl,
 	write(' map. --look at the map'), nl,
 	write(' heal --cure Tokemon in inventory if in gym center'), nl,
 	write(' status. --show your status'), nl,

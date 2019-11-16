@@ -1,35 +1,52 @@
-:- include('inventory.pl').
-:- include('util.pl').
+/*:- include('inventory.pl'). */
 :- include('battle.pl').
-/*:- include('move.pl').*/
- 
-/*:- dynamic(deadzone/1).*/
+
 :- dynamic(lebarPeta/1).
 :- dynamic(tinggiPeta/1).
-/*:- dynamic(tick/1).*/
 :- dynamic(terrain/3).
 :- dynamic(gymPos/2). /* (i,j) = (x,y) */
 :- dynamic(mapStatus/1).
 :- dynamic(player/2).
+:- dynamic(gameState/1).
+/* gameState menerima string dengan pilihan:
+    move : Lagi explore.
+    battle : Lagi battle. 
+    gym : Lagi di gym.
+    menang : Udah menang.
+    kalah : Udah kalah.
+*/
 
+insideGym:-
+    player(X,Y),
+    gymPos(X,Y).
+
+Heal :-
+    mapStatus(_),
+    insideGym,
+    forall(inventori(Name,_,_))
 
 update_nearby :-
     player(X,Y),
     \+gymPos(X,Y),
-    /* di sini harusnya cek ada pokemon Legendary atau gak */
+    \+legendaryTokemon(_,_,_,_,_,X,Y),
     random(0,100,I),
-    (I < 5,
+    ((I < 5,
     startbattle);
-    (I >= 5), !.
+    (I >= 5)), !.
 
 update_nearby :-
+    gymPos(X,Y),
     write('Anda sedang berada di gym!'), nl, !.
+
+update_nearby :-
+    legendaryTokemon(_,_,_,_,_,X,Y),
+    startbattle.
     
 
 init_map :-
     asserta(player(1,1)),
-    random(10,21,X),
-    random(10,21,Y),
+    random(15,31,X),
+    random(15,31,Y),
     asserta(lebarPeta(X)),asserta(tinggiPeta(Y)),
     asserta(mapStatus(1)),
     generateTerrain,
@@ -75,8 +92,8 @@ generateTerrain:-
     L2x is L2xtm, L2y is L2ytm+1),
 */
 
-    asserta(legendaryTokemon('Rinalmon', 'IRK', 1000, 13518005, 'Legendary',Lx,Ly)),
-	asserta(legendaryTokemon('Sangemon', 'Sister', 6969, 13517101, 'Legendary',L2x,L2y)),
+    asserta(legendaryTokemon('rinalmon', 'fire', 14000, 135180, 'Legendary',Lx,Ly)),
+	asserta(legendaryTokemon('sangemon', 'water', 15000, 135171, 'Legendary',L2x,L2y)),
 
     forall(between(0,Yp,J), (
         asserta(terrain(0,J,'X')),
@@ -89,12 +106,6 @@ generateTerrain:-
     forall(between(YMin,YMax,J), (
         forall(between(XMin,XMax,I), (
             ((\+ gymPos(I,J), \+ legendaryTokemon(_,_,_,_,_,I,J)),
-            /*
-            findall(Ter,isTerrain(Ter),ListTerrain),
-            length(ListTerrain, Panjang),
-            random(0,Panjang,NoTerrain),
-            ambil(ListTerrain, NoTerrain, Terrain),
-            asserta(terrain(I,J,Terrain)))*/
             random(0,10,Pick),
             (Pick < 1,
             asserta(terrain(I,J,'X'));
@@ -103,7 +114,7 @@ generateTerrain:-
             (gymPos(I,J);(legendaryTokemon(_,_,_,_,_,I,J), asserta(terrain(I,J,'L'))))
         ))
     )),
-    asserta(inventori('Pikachu', 'Listrik', 1, 100, 'Normal')),
+    asserta(inventori('Pikachu', 'Listrik', 800, 3000, 'Normal')),
 	asserta(maxInventori(6)),
     !.
  
@@ -203,12 +214,13 @@ loads(_) :-
 
 loads(FileName):-
 	\+file_exists(FileName),
-	write('File tersebut tidak ada.'), nl, !.
+	write('File tidak ditemukan!'), nl, !.
 loads(FileName):-
 	open(FileName, read, Str),
     read_file_lines(Str,Lines),
     close(Str),
-    assertaList(Lines), !.
+    assertaList(Lines),
+    write('Load game berhasil!'),nl, !.
 
 /*
 save(_):-
@@ -230,6 +242,8 @@ save(FileName):-
         mapStatus(Stat),
         write(mapStatus(Stat)),write('.'),nl,
 		writeTerrain,
+        writeLegendary,
+        writeInventory,
 	told, !.
 
 
@@ -240,6 +254,16 @@ writeTerrain:-
 	forall(terrain(X,Y,Na),(
 		write('terrain('),write(X),write(','),
         write(Y),write(',\''),write(Na),write('\')'),write('.'), nl
+	)), !.
+
+writeLegendary:-
+	forall(legendaryTokemon(A,B,C,D,E,F,G),(
+		write(legendaryTokemon(A,B,C,D,E,F,G)), nl
+	)), !.
+
+writeInventory:-
+    forall(inventori(A,B,C,D,E),(
+		write(inventori(A,B,C,D,E)), nl
 	)), !.
 
 /* Read dari file eksternal */
