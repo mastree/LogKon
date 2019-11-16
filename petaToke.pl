@@ -1,3 +1,4 @@
+/*:- include('inventory.pl'). */
 :- include('battle.pl').
 
 :- dynamic(lebarPeta/1).
@@ -14,16 +15,19 @@ insideGym:-
 update_nearby :-
     player(X,Y),
     \+gymPos(X,Y),
-    /* di sini harusnya cek ada pokemon Legendary atau gak */
+    \+legendaryTokemon(_,_,_,_,_,X,Y),
     random(0,100,I),
     ((I < 5,
     startbattle);
     (I >= 5)), !.
 
 update_nearby :-
-    player(X,Y),
     gymPos(X,Y),
     write('Anda sedang berada di gym!'), nl, !.
+
+update_nearby :-
+    legendaryTokemon(_,_,_,_,_,X,Y),
+    startbattle.
     
 
 init_map :-
@@ -97,7 +101,7 @@ generateTerrain:-
             (gymPos(I,J);(legendaryTokemon(_,_,_,_,_,I,J), asserta(terrain(I,J,'L'))))
         ))
     )),
-    asserta(inventori('Pikachu', 'Listrik', 1, 100, 'Normal')),
+    asserta(inventori('Pikachu', 'Listrik', 800, 3000, 'Normal')),
 	asserta(maxInventori(6)),
     !.
  

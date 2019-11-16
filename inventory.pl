@@ -29,7 +29,7 @@ printStatus :-
 	forall(inventori(A,B,C,D,E), printTokemon(A,B,C,D,E)),
 	write('================================='), nl,
 	nl, write('Lejenderi Tokemon :'), nl,nl,
-	forall(legendaryTokemon(F,G,H,I,J), printTokemon(F,G,H,I,J)).
+	forall(legendaryTokemon(F,G,H,I,J,_,_), printTokemon(F,G,H,I,J)).
 
 printTokemon(Nama, Tipe, _, Nyawa, _) :-
 	write(Nama), nl,

@@ -1,6 +1,7 @@
 :- include('inventory.pl').
 
 :- dynamic(picked/1).
+:- dynamic(enemy_pokemon/1).
 
 startbattle :- 
     write('A wild Tokemon appears!'),nl,
