@@ -28,7 +28,7 @@ Heal :-
 update_nearby :-
     player(X,Y),
     \+gymPos(X,Y),
-    \+legendaryTokemon(_,_,_,_,_,X,Y),
+    \+legendaryTokemon(_,_,_,_,_,_,X,Y),
     random(0,100,I),
     ((I < 5,
     startbattle);
@@ -39,7 +39,7 @@ update_nearby :-
     write('Anda sedang berada di gym!'), nl, !.
 
 update_nearby :-
-    legendaryTokemon(_,_,_,_,_,X,Y),
+    legendaryTokemon(_,_,_,_,_,_,X,Y),
     startbattle.
     
 
@@ -92,8 +92,8 @@ generateTerrain:-
     L2x is L2xtm, L2y is L2ytm+1),
 */
 
-    asserta(legendaryTokemon('rinalmon', 'fire', 14000, 135180, 'Legendary',Lx,Ly)),
-	asserta(legendaryTokemon('sangemon', 'water', 15000, 135171, 'Legendary',L2x,L2y)),
+    asserta(legendaryTokemon('rinalmon', 'fire', 14000, 135180, 135180, 'Legendary',Lx,Ly)),
+	asserta(legendaryTokemon('sangemon', 'water', 15000, 135171, 135171, 'Legendary',L2x,L2y)),
 
     forall(between(0,Yp,J), (
         asserta(terrain(0,J,'X')),
@@ -105,13 +105,13 @@ generateTerrain:-
     )),
     forall(between(YMin,YMax,J), (
         forall(between(XMin,XMax,I), (
-            ((\+ gymPos(I,J), \+ legendaryTokemon(_,_,_,_,_,I,J)),
+            ((\+ gymPos(I,J), \+ legendaryTokemon(_,_,_,_,_,_,I,J)),
             random(0,10,Pick),
             (Pick < 1,
             asserta(terrain(I,J,'X'));
             Pick >= 1,
             asserta(terrain(I,J,'-'))));
-            (gymPos(I,J);(legendaryTokemon(_,_,_,_,_,I,J), asserta(terrain(I,J,'L'))))
+            (gymPos(I,J);(legendaryTokemon(_,_,_,_,_,_,I,J), asserta(terrain(I,J,'L'))))
         ))
     )),
     asserta(inventori('Pikachu', 'Listrik', 800, 3000, 'Normal')),
@@ -257,13 +257,13 @@ writeTerrain:-
 	)), !.
 
 writeLegendary:-
-	forall(legendaryTokemon(A,B,C,D,E,F,G),(
-		write(legendaryTokemon(A,B,C,D,E,F,G)), nl
+	forall(legendaryTokemon(A,B,C,D,E,F,G,H),(
+		write(legendaryTokemon(A,B,C,D,E,F,G,H)), nl
 	)), !.
 
 writeInventory:-
-    forall(inventori(A,B,C,D,E),(
-		write(inventori(A,B,C,D,E)), nl
+    forall(inventori(A,B,C,D,E,F),(
+		write(inventori(A,B,C,D,E,F)), nl
 	)), !.
 
 /* Read dari file eksternal */
@@ -302,10 +302,10 @@ write_list(NamaFile,L) :-
 	close(S).
 /*-----------------------------*/
 retractLegendaryTokemon :-
-    \+legendaryTokemon(_,_,_,_,_,_,_),
+    \+legendaryTokemon(_,_,_,_,_,_,_,_),
     !.
 retractLegendaryTokemon :-
-    retract(legendaryTokemon(_,_,_,_,_,_,_)),
+    retract(legendaryTokemon(_,_,_,_,_,_,_,_)),
     retractLegendaryTokemon, !.
 retractTerrain :-
     \+terrain(_,_,_),

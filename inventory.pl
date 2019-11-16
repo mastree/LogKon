@@ -1,5 +1,5 @@
 :- dynamic(inventori/6).
-:- dynamic(legendaryTokemon/7).
+:- dynamic(legendaryTokemon/8).
 :- dynamic(maxInventori/1).
 
 setNamaTipe(yuckmon, water).
@@ -30,7 +30,7 @@ printStatus :-
 	forall(inventori(A,B,C,D,E,F), printTokemon(A,B,C,D,E,F)),
 	write('================================='), nl,
 	nl, write('Lejenderi Tokemon :'), nl,nl,
-	forall(legendaryTokemon(F,G,H,I,J,K,_,_), printTokemon(F,G,H,I,J,K)).
+	forall(legendaryTokemon(F,G,H,I,J,K,_), printTokemon(F,G,H,I,J,K)).
 
 printTokemon(Nama, Tipe, _, Nyawa, _, _) :-
 	write(Nama), nl,
