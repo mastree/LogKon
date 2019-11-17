@@ -110,12 +110,14 @@ attack :-
     (\+isGreater(Tipe,TipeM),
     RealDamage is Damage)),!,
     write(RealDamage),
-    write(' damage.'),nl,
+    write(' damage '),
+    write('to '),
+    write(Nama),nl,
     NewCurrentNyawaM is CurrentNyawaM - RealDamage,
     NewCurrentNyawaM <= 0,retract(enemy(NamaMati,_,_,_)),
     write(NamaMati),
     write(' faints! Do you want to capture '),write(NamaMati),write('?'),
-    write('(capture/0 to capture '),write(NamaMati),write(', otherwise move away.'));
+    write(' capture/0 to capture '),write(NamaMati),write(', otherwise move away.'));
     (NewCurrentNyawaM > 0,
     asserta(enemy(Nama,TipeM,DamageM,NewCurrentNyawaM)),
     attackM)).
@@ -126,21 +128,23 @@ attackM :-
     nl,
     printMyStatus,
     nl,
-    enemy(NamaM,_,DamageM,_),
+    enemy(NamaM,TipeM,DamageM,_),
     write(NamaM),
     write(' dealt '),
-    retract(enemy(Nama,TipeM,DamageM,CurrentNyawaM)),
-    ((isGreater(Tipe,TipeM),
-    RealDamage is 1.5*Damage);
+    retract(inventori(Nama,Tipe,Damage,CurrentNyawa)),
+    ((isGreater(TipeM,Tipe),
+    RealDamage is 1.5*DamageM);
     (\+isGreater(Tipe,TipeM),
-    RealDamage is Damage)),!,
+    RealDamage is DamageM)),!,
     write(RealDamage),
-    write(' damage.'),nl,
-    NewCurrentNyawaM is CurrentNyawaM - RealDamage,
-    NewCurrentNyawaM <= 0,retract(enemy(NamaMati,_,_,_)),
-    write(NamaMati),
-    write(' faints! Do you want to capture '),write(NamaMati),write('?'),
-    write('(capture/0 to capture '),write(NamaMati),write(', otherwise move away.'));
-    (NewCurrentNyawaM > 0,
-    asserta(enemy(Nama,TipeM,DamageM,NewCurrentNyawaM)),
-    attackM)).
+    write(' damage'),
+    write(' to '),
+    write(Nama),
+    nl,
+    NewCurrentNyawa is CurrentNyawa - RealDamage,
+    ((NewCurrentNyawa =< 0,
+    retract(inventori(_,_,_,_,_,_)));
+    (NewCurrentNyawa > 0,
+    asserta(inventori(Nama,Tipe,Damage,NewCurrentNyawa)))).
+
+    
