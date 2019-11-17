@@ -194,5 +194,8 @@ specialAttack :-
     (NewCurrentNyawaM > 0,
     asserta(enemy(NamaM,TipeM,DamageM,NewCurrentNyawaM)),
     attackM)),!)),!.
-    
-    
+
+/* belom kelar */    
+capture :-
+    enemy(NamaC,TipeC,DamageC,NyawaC).
+
