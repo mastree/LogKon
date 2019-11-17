@@ -1,4 +1,4 @@
-/*:- include('inventory.pl'). */
+:- include('util.pl').
 :- include('battle.pl').
 
 :- dynamic(lebarPeta/1).
@@ -16,32 +16,42 @@
     menang : Udah menang.
     kalah : Udah kalah.
 */
+:- dynamic(enemyMaxHP/1).
 
 insideGym:-
     player(X,Y),
     gymPos(X,Y).
 
 heal :-
-    mapStatus(_),
     insideGym,
-    forall(inventori(_,_,_)).
+    forall(inventori(Name,_,_,_,_,_), healTokemon(Name)), !.
+
+heal :-
+    write('Kamu sedang tidak di gym. Kamu tidak bisa melakukan aksi healing!'), nl, !.
+
+healTokemon(Nama) :-
+    retract(inventori(Nama,Tipe,Damage,_,MaxHP,Rarity)),
+    NewNyawa is MaxHP,
+    asserta(inventori(Nama,Tipe,Damage,NewNyawa,MaxHP,Rarity)), !.
 
 update_nearby :-
     player(X,Y),
     \+gymPos(X,Y),
     \+legendaryTokemon(_,_,_,_,_,_,X,Y),
     random(0,100,I),
-    ((I < 5,
+    ((I < 38,
     startbattle);
-    (I >= 5)), !.
+    (I >= 38)), !.
 
 update_nearby :-
-    gymPos(_,_),
+    player(X,Y),
+    gymPos(X,Y),
     write('Anda sedang berada di gym!'), nl, !.
 
 update_nearby :-
+    player(X,Y),
     legendaryTokemon(_,_,_,_,_,_,X,Y),
-    startbattle.
+    startbattleLeg.
     
 
 init_map :-
@@ -51,6 +61,7 @@ init_map :-
     asserta(lebarPeta(X)),asserta(tinggiPeta(Y)),
     asserta(mapStatus(1)),
     generateTerrain,
+    asserta(gameState(move)),
     !.
  
 /*isMapAset(G).*/
@@ -115,7 +126,7 @@ generateTerrain:-
             (gymPos(I,J);(legendaryTokemon(_,_,_,_,_,_,I,J), asserta(terrain(I,J,'L'))))
         ))
     )),
-    asserta(inventori('Pikachu', 'Listrik', 800, 3000, 'Normal')),
+    addInventori('Intmander', fire, 800, 3000, 'Normal'),
 	asserta(maxInventori(6)),
     !.
  
@@ -136,7 +147,9 @@ printMapAll:-
     !.
 
 /* Implementasi Move */
-
+w :-
+    \+gameState(move),
+    write('Kamu tidak bisa berpindah tempat saat ini!'),nl,!.
 w :-
     gameState(X), X == preBattle,
     write('You\'re encountering a tokemon. You can\'t move! Fight or run?'), nl, !.
@@ -150,6 +163,9 @@ w :-
 	write('Jangan ke atas lagi lah coy!'),nl,!.
 
 w :-
+    ((enemyMaxHP(_),
+    retract(enemyMaxHP(_)));
+    (\+enemyMaxHP(_))),
 	retract(player(X,Y)),
 	Y > 1,
 	NewY is Y-1,
@@ -157,7 +173,9 @@ w :-
 	asserta(player(X,NewY)),
 	write('Anda bergerak ke arah utara'),nl,
 	update_nearby, !.
-
+a :-
+    \+gameState(move),
+    write('Kamu tidak bisa berpindah tempat saat ini!'),nl,!.
 a :-
     gameState(X), X == preBattle,
     write('You\'re encountering a tokemon. You can\'t move! Fight or run?'), nl, !.
@@ -171,6 +189,9 @@ a :-
 	write('Jangan ke kiri lagi lah coy!'),nl,!.	
 
 a :-
+    ((enemyMaxHP(_),
+    retract(enemyMaxHP(_)));
+    (\+enemyMaxHP(_))),
 	retract(player(X,Y)),
 	X > 1,
 	NewX is X-1,
@@ -178,7 +199,9 @@ a :-
 	asserta(player(NewX,Y)),
 	write('Anda bergerak ke arah barat'),nl,
 	update_nearby, !.
-
+s :-
+    \+gameState(move),
+    write('Kamu tidak bisa berpindah tempat saat ini!'),nl,!.
 s :-
     gameState(X), X == preBattle,
     write('You\'re encountering a tokemon. You can\'t move! Fight or run?'), nl, !.
@@ -192,6 +215,9 @@ s :-
 	write('Jangan ke bawah lagi lah coy!'),nl,!.
 
 s :-
+    ((enemyMaxHP(_),
+    retract(enemyMaxHP(_)));
+    (\+enemyMaxHP(_))),
 	retract(player(X,Y)),
 	tinggiPeta(H),
 	Y < H,
@@ -200,6 +226,11 @@ s :-
 	asserta(player(X,NewY)),
 	write('Anda bergerak ke arah selatan'),nl,
 	update_nearby, !.
+
+d :-
+    \+gameState(move),
+    write('Kamu tidak bisa berpindah tempat saat ini!'),nl,!.
+
 d :-
     gameState(X), X == preBattle,
     write('You\'re encountering a tokemon. You can\'t move! Fight or run?'), nl, !.
@@ -213,6 +244,9 @@ d :-
 	write('Jangan ke kanan lagi lah coy!'),nl,!.	
 
 d :-
+    ((enemyMaxHP(_),
+    retract(enemyMaxHP(_)));
+    (\+enemyMaxHP(_))),
 	retract(player(X,Y)),
 	lebarPeta(W),
 	X < W,
@@ -247,7 +281,9 @@ save(_):-
 */
 
 save(FileName):-
-	tell(FileName),
+    tell(FileName),
+        gameState(A),
+        write(gameState(A)),write('.'),nl,
 		player(X,Y),
 		write(player(X,Y)),write('.'),nl,
         gymPos(Gx,Gy),
@@ -337,4 +373,5 @@ quit :-
     retractLegendaryTokemon,
     retract(gymPos(_,_)),
     retract(mapStatus(_)),
-    retract(player(_,_)), !.
+    retract(player(_,_)),
+    retract(gameState(_)), !.

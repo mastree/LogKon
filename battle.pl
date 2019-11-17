@@ -5,6 +5,7 @@
 :- dynamic(sAttack/1).
 :- dynamic(gameState/1).
 :- dynamic(enemyDied/4).
+:- dynamic(enemyMaxHP/1).
 
 
 /*
@@ -27,21 +28,26 @@ isGreater(leaves,water).
 isGreater(water,fire).
 
 startbattle :-
+    retract(gameState(_)),
     asserta(gameState(preBattle)),
     randTokemon(Nama,Tipe,Damage,Nyawa),
     asserta(enemy(Nama,Tipe,Damage,Nyawa)),
+    asserta(enemyMaxHP(Nyawa)),
     asserta(sAttack(0)),
     write('A wild Tokemon appears!'),nl,
     write('Fight or Run?').
 
-startbattleLeg :- 
+startbattleLeg :-
+    retract(gameState(_)),
+    asserta(gameState(preBattle)),
     legendaryTokemon(Nama,Tipe,Damage,Nyawa,_,_,_,_),
     asserta(enemy(Nama,Tipe,Damage,Nyawa)),
-    write('A wild Tokemon appears!'),nl,
+    asserta(enemyMaxHP(Nyawa)),
+    write('A wild Legendary Tokemon appears!'),nl,
     write('Fight or Run?').
 
 run :-
-    gameState(X), X \= preBattle, write('Illegal command.'), nl, !.
+    gameState(X), X \== preBattle, write('Illegal command.'), nl, !.
 
 run :- 
     random(1,101,X),
@@ -52,10 +58,12 @@ run :-
     nl,nl,fight);
     (X >= 71,
     write('You succesfully escaped the Tokemon!'),
-    retract(enemy(_,_,_,_)))),!.
+    retract(enemy(_,_,_,_)),
+    retract(gameState(_)),
+    asserta(gameState(move)))), !.
 
 fight :-
-    gameState(X), X \= preBattle, write('Illegal command.'), nl, !.
+    gameState(X), X \== preBattle, write('Illegal command.'), nl, !.
 
 fight :-
     /*write('You choosed to fight!'),nl,*/
@@ -97,7 +105,8 @@ pick(X) :-
     write('You do not have that Tokemon!'), !.
 
 pick(X) :-
-    retract(picked(_)), pick(X), !.
+    retract(picked(_)), pick(X),
+    attackM, !.
 
 damage(X) :-
     inventori(X,_,Y,_,_,_),!,
@@ -124,7 +133,12 @@ attack :-
     write(' faints! Do you want to capture '),write(Nama),write('?'),
     write(' capture/0 to capture '),write(Nama),write(', otherwise move away.'),
     retract(gameState(_)),
-    asserta(enemyDied(Nama, TipeM, DamageM, CurrentNyawaM)));
+    ((legendaryTokemon(Nama,_,_,_,_,_,_,_),
+    retract(legendaryTokemon(Nama,_,_,_,_,_,_,_)));
+    (\+legendaryTokemon(Nama,_,_,_,_,_,_,_))),
+    retract(picked(_)),
+    asserta(enemyDied(Nama, TipeM, DamageM, CurrentNyawaM)),
+    asserta(gameState(move)));
     (NewCurrentNyawaM > 0,
     asserta(enemy(Nama,TipeM,DamageM,NewCurrentNyawaM)),
     attackM)),!.
@@ -156,7 +170,8 @@ attackM :-
     NewCurrentNyawa is CurrentNyawa - RealDamage,
     ((NewCurrentNyawa =< 0,
     write(X),
-    write(' died.'),nl,
+    write(' died.'), nl,
+    drop(X),
     currentInventoryLength(LengthNow),
     (((LengthNow == 0),
     retract(gameState(_)),
@@ -199,13 +214,19 @@ specialAttack :-
     write(' capture/0 to capture '),write(NamaM),write(', otherwise move away.'),
     retract(sAttack(_)),
     retract(gameState(_)),
-    asserta(enemyDied(NamaM, TipeM, DamageM, CurrentNyawaM)));
+    ((legendaryTokemon(Nama,_,_,_,_,_,_,_),
+    retract(legendaryTokemon(Nama,_,_,_,_,_,_,_)));
+    (\+legendaryTokemon(Nama,_,_,_,_,_,_,_))),
+    retract(picked(_)),
+    asserta(enemyDied(NamaM, TipeM, DamageM, CurrentNyawaM)),
+    asserta(gameState(move)));
     (NewCurrentNyawaM > 0,
     asserta(enemy(NamaM,TipeM,DamageM,NewCurrentNyawaM)),
     attackM)),!)),!.
   
 capture :-
-    retract(enemyDied(NamaC,TipeC,DamageC,NyawaC)),
+    retract(enemyDied(NamaC,TipeC,DamageC,_)),
+    retract(enemyMaxHP(NyawaC)),
     write(NamaC),
     write(' is captured!'),
     addInventori(NamaC,TipeC,DamageC,NyawaC,999).

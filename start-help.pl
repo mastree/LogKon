@@ -28,12 +28,12 @@ init_game :-
 	write(' start. --start the game!'), nl,
 	write(' help. --show available commands'), nl,
 	write(' quit. --quit the game'), nl,
-	write(' n. s. e. w. --move'), nl,
+	write(' w. a. s. d. --move'), nl,
 	write(' map. --look at the map'), nl,
-	write(' heal --cure Tokemon in inventory if in gym center'), nl,
+	write(' heal. --cure Tokemon in inventory if in gym center'), nl,
 	write(' status. --show your status'), nl,
 	write(' save(Filename). --save your game'), nl,
-	write(' load(Filename). --load previously saved game'), nl,
+	write(' loads(Filename). --load previously saved game'), nl,
 	nl,
 	write('Legends: '),nl,
 	write(' -X = Pagar'),nl,
@@ -46,10 +46,10 @@ help :-
 	write(' quit. --quit the game'), nl,
 	write(' w. a. s. d. --move'), nl,
 	write(' map. --look at the map'), nl,
-	write(' heal --cure Tokemon in inventory if in gym center'), nl,
+	write(' heal. --cure Tokemon in inventory if in gym center'), nl,
 	write(' status. --show your status'), nl,
 	write(' save(Filename). --save your game'), nl,
-	write(' load(Filename). --load previously saved game'), nl,
+	write(' loads(Filename). --load previously saved game'), nl,
 	nl,
 	write('Legends: '),nl,
 	write(' -X = Pagar'),nl,
@@ -57,7 +57,7 @@ help :-
 	write(' -G = Gym'),nl.
 
 start :-
-	gameState(X), X == play,
+	\+gameState(main),
 	write('You\'re already playing! Can\'t start new game'), nl, !.
 
 start :-
@@ -71,35 +71,55 @@ start :-
 	write('===================================='), nl,
 	write('Rilamon'), nl,
 	write('Type : Fire'), nl,
-	write('HP : 100'), nl,
-	write('Level : 1'), nl, nl,
+	write('HP : 3000'), nl,
+	write('Damage : 800'),
 	write('Harlimon'), nl,
 	write('Type : Water'), nl,
-	write('HP : 100'), nl,
-	write('Level : 1'), nl, nl,
+	write('HP : 3000'), nl,
+	write('Damage : 800'),
 	write('Rinamon'), nl,
 	write('Type : Leaves'), nl,
-	write('HP : 100'), nl,
-	write('Level : 1'), nl, nl,
+	write('HP : 3000'), nl,
+	write('Damage : 800'),
 	write('===================================='), nl,
 	write('Choose wisely : '), !.
 
 rilamon :-
-	gameState(X), X \= pick, write('Illegal command.'), nl, !.
+	gameState(X), X \== pick, write('Illegal command.'), nl, !.
 
 rilamon :-
 	gameState(X), X == pick, write('You have picked Rilamon as your starter!'), nl,
-	asserta(inventori('rilamon', fire, 10, 100, 100, 'common')),
+	addInventori('Rilamon',fire,800,3000,'Normal'),
 	write('Now go outside there and catch some legendary tokemons.'), nl,
 	write('===================================='), nl,
-	retract(gameState(_)), assert(gameState(play)), init_map, map, !.
+	retract(gameState(_)), init_map, map, !.
+
+harlimon :-
+	gameState(X), X \== pick, write('Illegal command.'), nl, !.
+
+harlimon :-
+	gameState(X), X == pick, write('You have picked Harlimon as your starter!'), nl,
+	addInventori('Harlimon',water,800,3000,'Normal'),
+	write('Now go outside there and catch some legendary tokemons.'), nl,
+	write('===================================='), nl,
+	retract(gameState(_)), init_map, map, !.
+
+rinamon :-
+	gameState(X), X \== pick, write('Illegal command.'), nl, !.
+
+rinamon :-
+	gameState(X), X == pick, write('You have picked Rinamon as your starter!'), nl,
+	addInventori('Rinamon',leaves,800,3000,'Normal'),
+	write('Now go outside there and catch some legendary tokemons.'), nl,
+	write('===================================='), nl,
+	retract(gameState(_)), init_map, map, !.
 
 map :-
 	gameState(X), X == main,
 	write('You haven\'t even started the game. Please type \'start.\' first.'), nl, !.	
 
 map :-
-	gameState(X), X == play,
+	gameState(X), X == move,
 	printMapAll, !.
 
 :- init_game, !.

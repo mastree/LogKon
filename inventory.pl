@@ -30,7 +30,7 @@ addInventori(Nama, Tipe, Damage, Nyawa, Rarity) :-
 	MaxHP = Nyawa,
 	asserta(inventori(Nama, Tipe, Damage, Nyawa, MaxHP, Rarity)),!.
 
-delInventori(Nama) :-
+drop(Nama) :-
 	retract(inventori(Nama, _, _, _, _, _)),!.
 
 printStatus :-
