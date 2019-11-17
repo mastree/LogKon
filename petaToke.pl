@@ -10,7 +10,8 @@
 :- dynamic(gameState/1).
 /* gameState menerima string dengan pilihan:
     move : Lagi explore.
-    battle : Lagi battle. 
+    battle : Lagi battle.
+    preBattle : Lagi milih antara fight atau run.
     gym : Lagi di gym.
     menang : Udah menang.
     kalah : Udah kalah.
@@ -137,6 +138,10 @@ printMapAll:-
 /* Implementasi Move */
 
 w :-
+    gameState(X), X == preBattle,
+    write('You\'re encountering a tokemon. You can\'t move! Fight or run?'), nl, !.
+
+w :-
 	player(X,Y),
     Xnew is X,
     Ynew is Y-1,
@@ -152,6 +157,10 @@ w :-
 	asserta(player(X,NewY)),
 	write('Anda bergerak ke arah utara'),nl,
 	update_nearby, !.
+
+a :-
+    gameState(X), X == preBattle,
+    write('You\'re encountering a tokemon. You can\'t move! Fight or run?'), nl, !.
 
 a :-
     player(X,Y),
@@ -171,6 +180,10 @@ a :-
 	update_nearby, !.
 
 s :-
+    gameState(X), X == preBattle,
+    write('You\'re encountering a tokemon. You can\'t move! Fight or run?'), nl, !.
+
+s :-
 	player(X,Y),
     Xnew is X,
     Ynew is Y+1,
@@ -187,6 +200,10 @@ s :-
 	asserta(player(X,NewY)),
 	write('Anda bergerak ke arah selatan'),nl,
 	update_nearby, !.
+d :-
+    gameState(X), X == preBattle,
+    write('You\'re encountering a tokemon. You can\'t move! Fight or run?'), nl, !.
+
 d :-
 	player(X,Y),
     Xnew is X+1,

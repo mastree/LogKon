@@ -3,18 +3,28 @@
 :- dynamic(picked/1).
 :- dynamic(enemy/4).
 
+
+
+:- discontiguous startbattle/0.
+:- discontiguous startbattleLeg/0.
+:- discontiguous run/0.
+:- discontiguous fight/0.
+:- discontiguous pick/1.
+:- discontiguous damage/1.
+:- discontiguous attack/0.
+:- discontiguous attackM/0.
+:- discontiguous isGreater/2.
+:- discontiguous printTokeEnemy/4.
+:- discontiguous printMyStatus/0.
+:- discontiguous printMyToke/6.
+:- discontiguous printStatusEnemy/0.
+
 isGreater(fire,leaves).
 isGreater(leaves,water).
 isGreater(water,fire).
 
-:- discontiguous startbattle/0.
-:- discontiguous run/0.
-:- discontiguous battle/0.
-:- discontiguous pick/1.
-:- discontiguous damage/1.
-:- discontiguous attack/0.
-
-startbattle :- 
+startbattle :-
+    retract(gameState(_)), asserta(gameState(preBattle)),
     randTokemon(Nama,Tipe,Damage,Nyawa),
     asserta(enemy(Nama,Tipe,Damage,Nyawa)),
     write('A wild Tokemon appears!'),nl,
@@ -26,18 +36,25 @@ startbattleLeg :-
     write('A wild Tokemon appears!'),nl,
     write('Fight or Run?').
 
+run :-
+    gameState(X), X \= preBattle, write('Illegal command.'), nl, !.
+
 run :- 
     random(1,101,X),
     ((X < 71,
     write('You failed to run!'),
-    nl,
+    nl, retract(gameState(_)), asserta(gameState(battle)),
     write('Choose your Tokemon!'),
     nl,nl,battle);
     (X >= 71,
     write('You succesfully escaped the Tokemon!'))),!.
 
-battle :-
-    write('Available Tokemons: '),nl,
+fight :-
+    gameState(X), X \= preBattle, write('Illegal command.'), nl, !.
+
+fight :-
+    write('You choosed to fight!'),nl,
+    retract(gameState(_)), asserta(gameState(battle)),
     printStatus.
 
 printTokeEnemy(Nama,Tipe,_,Nyawa) :-
@@ -95,8 +112,7 @@ attack :-
     write(RealDamage),
     write(' damage.'),nl,
     NewCurrentNyawaM is CurrentNyawaM - RealDamage,
-    ((NewCurrentNyawaM <= 0,
-    retract(enemy(NamaMati,_,_,_)),
+    NewCurrentNyawaM <= 0,retract(enemy(NamaMati,_,_,_)),
     write(NamaMati),
     write(' faints! Do you want to capture '),write(NamaMati),write('?'),
     write('(capture/0 to capture '),write(NamaMati),write(', otherwise move away.'));
@@ -121,8 +137,7 @@ attackM :-
     write(RealDamage),
     write(' damage.'),nl,
     NewCurrentNyawaM is CurrentNyawaM - RealDamage,
-    ((NewCurrentNyawaM <= 0,
-    retract(enemy(NamaMati,_,_,_)),
+    NewCurrentNyawaM <= 0,retract(enemy(NamaMati,_,_,_)),
     write(NamaMati),
     write(' faints! Do you want to capture '),write(NamaMati),write('?'),
     write('(capture/0 to capture '),write(NamaMati),write(', otherwise move away.'));
