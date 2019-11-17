@@ -126,7 +126,7 @@ generateTerrain:-
             (gymPos(I,J);(legendaryTokemon(_,_,_,_,_,_,I,J), asserta(terrain(I,J,'L'))))
         ))
     )),
-    addInventori('Intmander', fire, 800, 3000, 'Normal'),
+    /* addInventori('Intmander', fire, 800, 3000, 'Normal'), udh milih di picking phase*/
 	asserta(maxInventori(6)),
     !.
  
