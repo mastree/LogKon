@@ -4,6 +4,7 @@
 :- dynamic(enemy/4).
 :- dynamic(sAttack/1).
 :- dynamic(gameState/1).
+:- dynamic(enemyDied/4).
 
 
 /*
@@ -59,7 +60,7 @@ fight :-
 fight :-
     /*write('You choosed to fight!'),nl,*/
     retract(gameState(_)), asserta(gameState(battle)),
-    printStatus.
+    printMyStatus.
 
 printTokeEnemy(Nama,Tipe,_,Nyawa) :-
     write(Nama),nl,
@@ -74,7 +75,7 @@ printStatusEnemy :-
 printMyToke(Nama,Tipe,_,Nyawa,_,_) :-
     write(Nama),nl,
     write('Health : '),write(Nyawa),nl,
-    write('Type: '),write(Tipe),nl.
+    write('Type: '),write(Tipe),nl,nl.
 
 printMyStatus :-
     write('Your Tokemon: '), nl,nl,
@@ -87,7 +88,7 @@ pick(X) :-
     write(X),
     write(' I choose you!'),nl,
     nl,
-    printStatusEnemy,
+    printStatusEnemy,nl,
     asserta(picked(X)),
     printMyStatus, !.
 
@@ -103,8 +104,6 @@ damage(X) :-
     write(Y).
 
 attack :-
-    asserta(sAttack(0)),
-    nl,
     write('You dealt '),
     picked(X),
     inventori(X,Tipe,Damage,_,_,_),
@@ -124,7 +123,8 @@ attack :-
     write(Nama),
     write(' faints! Do you want to capture '),write(Nama),write('?'),
     write(' capture/0 to capture '),write(Nama),write(', otherwise move away.'),
-    retract(gameState(_)));
+    retract(gameState(_)),
+    asserta(enemyDied(Nama, TipeM, DamageM, CurrentNyawaM)));
     (NewCurrentNyawaM > 0,
     asserta(enemy(Nama,TipeM,DamageM,NewCurrentNyawaM)),
     attackM)),!.
@@ -135,10 +135,11 @@ attackM :-
     nl,
     printMyStatus,
     nl,
+    picked(X),
     enemy(NamaM,TipeM,DamageM,_),
     write(NamaM),
     write(' dealt '),
-    retract(inventori(Nama,Tipe,Damage,CurrentNyawa,_,_)),
+    retract(inventori(X,Tipe,Damage,CurrentNyawa,_,_)),
     ((isGreater(TipeM,Tipe),
     RealDamage is 1.5*DamageM);
     (isGreater(Tipe,TipeM),
@@ -149,16 +150,23 @@ attackM :-
     write(RealDamage),
     write(' damage'),
     write(' to '),
-    write(Nama),
+    write(X),
     nl,
     nl,
     NewCurrentNyawa is CurrentNyawa - RealDamage,
     ((NewCurrentNyawa =< 0,
-    write(Nama),
-    write(' died.'),
-    retract(gameState(_)));
+    write(X),
+    write(' died.'),nl,
+    currentInventoryLength(LengthNow),
+    (((LengthNow == 0),
+    retract(gameState(_)),
+    retract(enemy(_,_,_,_)),
+    retract(sAttack(_)),
+    asserta(gameState(kalah)));
+    (LengthNow > 0,
+    write('Your choice is died, pick another Tokemon!'),nl),!));
     (NewCurrentNyawa > 0,
-    asserta(inventori(Nama,Tipe,Damage,NewCurrentNyawa,_,_))),
+    asserta(inventori(X,Tipe,Damage,NewCurrentNyawa,_,_))),
     printStatusEnemy,
     nl,
     printMyStatus),!.
@@ -190,12 +198,20 @@ specialAttack :-
     write(' faints! Do you want to capture '),write(NamaM),write('?'),
     write(' capture/0 to capture '),write(NamaM),write(', otherwise move away.'),
     retract(sAttack(_)),
-    retract(gameState(_)));
+    retract(gameState(_)),
+    asserta(enemyDied(NamaM, TipeM, DamageM, CurrentNyawaM)));
     (NewCurrentNyawaM > 0,
     asserta(enemy(NamaM,TipeM,DamageM,NewCurrentNyawaM)),
     attackM)),!)),!.
-
-/* belom kelar */    
+  
 capture :-
-    enemy(NamaC,TipeC,DamageC,NyawaC).
+    retract(enemyDied(NamaC,TipeC,DamageC,NyawaC)),
+    write(NamaC),
+    write(' is captured!'),
+    addInventori(NamaC,TipeC,DamageC,NyawaC,999).
+
+
+    
+
+
 
