@@ -29,6 +29,7 @@ startbattle :-
     asserta(gameState(preBattle)),
     randTokemon(Nama,Tipe,Damage,Nyawa),
     asserta(enemy(Nama,Tipe,Damage,Nyawa)),
+    asserta(sAttack(0)),
     write('A wild Tokemon appears!'),nl,
     write('Fight or Run?').
 
@@ -102,6 +103,7 @@ damage(X) :-
     write(Y).
 
 attack :-
+    asserta(sAttack(0)),
     nl,
     write('You dealt '),
     picked(X),
@@ -119,13 +121,13 @@ attack :-
     write(Nama),nl,
     NewCurrentNyawaM is CurrentNyawaM - RealDamage,
     ((NewCurrentNyawaM =< 0,
-    retract(enemy(NamaMati,_,_,_)),
-    write(NamaMati),
-    write(' faints! Do you want to capture '),write(NamaMati),write('?'),
-    write(' capture/0 to capture '),write(NamaMati),write(', otherwise move away.'));
+    write(Nama),
+    write(' faints! Do you want to capture '),write(Nama),write('?'),
+    write(' capture/0 to capture '),write(Nama),write(', otherwise move away.'),
+    retract(gameState(_)));
     (NewCurrentNyawaM > 0,
     asserta(enemy(Nama,TipeM,DamageM,NewCurrentNyawaM)),
-    attackM)).
+    attackM)),!.
 
 
 attackM :- 
@@ -153,13 +155,44 @@ attackM :-
     NewCurrentNyawa is CurrentNyawa - RealDamage,
     ((NewCurrentNyawa =< 0,
     write(Nama),
-    write(' died.'));
+    write(' died.'),
+    retract(gameState(_)));
     (NewCurrentNyawa > 0,
     asserta(inventori(Nama,Tipe,Damage,NewCurrentNyawa,_,_))),
     printStatusEnemy,
     nl,
     printMyStatus),!.
-/*
-specialAttack :-*/
+
+specialAttack :-
+    ((sAttack(1),
+    write('Special attacks can only be used once per battle!'),nl);
+    (sAttack(0),
+    retract(sAttack(_)),
+    asserta(sAttack(1)),
+    inventori(Nama,Tipe,Damage,_,_,_),
+    retract(enemy(NamaM,TipeM,DamageM,CurrentNyawaM)),
+    SpecDamage is 3*Damage, 
+    write(Nama),
+    write(' uses leaf blade!'),nl,
+    write('It was super effective!'),nl,
+    ((isGreater(Tipe,TipeM),
+    RealDamage is 1.5*SpecDamage);
+    (isGreater(TipeM,Tipe),
+    RealDamage is 0.5*SpecDamage);
+    (\+isGreater(TipeM,Tipe),
+    \+isGreater(Tipe,TipeM),
+    RealDamage is SpecDamage)),!,
+    write('You dealt '),write(RealDamage),write(' damage to '),write(NamaM),nl,
+    nl,
+    NewCurrentNyawaM is CurrentNyawaM - RealDamage,
+    ((NewCurrentNyawaM =< 0,
+    write(NamaM),
+    write(' faints! Do you want to capture '),write(NamaM),write('?'),
+    write(' capture/0 to capture '),write(NamaM),write(', otherwise move away.'),
+    retract(sAttack(_)),
+    retract(gameState(_)));
+    (NewCurrentNyawaM > 0,
+    asserta(enemy(NamaM,TipeM,DamageM,NewCurrentNyawaM)),
+    attackM)),!)),!.
     
     
