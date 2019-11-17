@@ -2,9 +2,11 @@
 
 :- dynamic(picked/1).
 :- dynamic(enemy/4).
+:- dynamic(sAttack/1).
+:- dynamic(gameState/1).
 
 
-
+/*
 :- discontiguous startbattle/0.
 :- discontiguous startbattleLeg/0.
 :- discontiguous run/0.
@@ -18,13 +20,13 @@
 :- discontiguous printMyStatus/0.
 :- discontiguous printMyToke/6.
 :- discontiguous printStatusEnemy/0.
-
+*/
 isGreater(fire,leaves).
 isGreater(leaves,water).
 isGreater(water,fire).
 
 startbattle :-
-    retract(gameState(_)), asserta(gameState(preBattle)),
+    asserta(gameState(preBattle)),
     randTokemon(Nama,Tipe,Damage,Nyawa),
     asserta(enemy(Nama,Tipe,Damage,Nyawa)),
     write('A wild Tokemon appears!'),nl,
@@ -43,17 +45,18 @@ run :-
     random(1,101,X),
     ((X < 71,
     write('You failed to run!'),
-    nl, retract(gameState(_)), asserta(gameState(battle)),
+    nl, 
     write('Choose your Tokemon!'),
-    nl,nl,battle);
+    nl,nl,fight);
     (X >= 71,
-    write('You succesfully escaped the Tokemon!'))),!.
+    write('You succesfully escaped the Tokemon!'),
+    retract(enemy(_,_,_,_)))),!.
 
 fight :-
     gameState(X), X \= preBattle, write('Illegal command.'), nl, !.
 
 fight :-
-    write('You choosed to fight!'),nl,
+    /*write('You choosed to fight!'),nl,*/
     retract(gameState(_)), asserta(gameState(battle)),
     printStatus.
 
@@ -73,7 +76,7 @@ printMyToke(Nama,Tipe,_,Nyawa,_,_) :-
     write('Type: '),write(Tipe),nl.
 
 printMyStatus :-
-    write('Your enemy: '), nl,nl,
+    write('Your Tokemon: '), nl,nl,
     forall(inventori(Nama, Tipe, _, Nyawa, _, _),
     printMyToke(Nama, Tipe,_,Nyawa,_,_)).
 
@@ -84,7 +87,6 @@ pick(X) :-
     write(' I choose you!'),nl,
     nl,
     printStatusEnemy,
-    write('Your Tokemon: '),nl,
     asserta(picked(X)),
     printMyStatus, !.
 
@@ -107,14 +109,17 @@ attack :-
     retract(enemy(Nama,TipeM,DamageM,CurrentNyawaM)),
     ((isGreater(Tipe,TipeM),
     RealDamage is 1.5*Damage);
-    (\+isGreater(Tipe,TipeM),
+    (isGreater(TipeM,Tipe),
+    RealDamage is 0.5*Damage);
+    (\+(isGreater(Tipe,TipeM)),\+(isGreater(TipeM,Tipe)),
     RealDamage is Damage)),!,
     write(RealDamage),
     write(' damage '),
     write('to '),
     write(Nama),nl,
     NewCurrentNyawaM is CurrentNyawaM - RealDamage,
-    NewCurrentNyawaM <= 0,retract(enemy(NamaMati,_,_,_)),
+    ((NewCurrentNyawaM =< 0,
+    retract(enemy(NamaMati,_,_,_)),
     write(NamaMati),
     write(' faints! Do you want to capture '),write(NamaMati),write('?'),
     write(' capture/0 to capture '),write(NamaMati),write(', otherwise move away.'));
@@ -122,7 +127,7 @@ attack :-
     asserta(enemy(Nama,TipeM,DamageM,NewCurrentNyawaM)),
     attackM)).
 
-/* belum fix */
+
 attackM :- 
     printStatusEnemy,
     nl,
@@ -131,20 +136,30 @@ attackM :-
     enemy(NamaM,TipeM,DamageM,_),
     write(NamaM),
     write(' dealt '),
-    retract(inventori(Nama,Tipe,Damage,CurrentNyawa)),
+    retract(inventori(Nama,Tipe,Damage,CurrentNyawa,_,_)),
     ((isGreater(TipeM,Tipe),
     RealDamage is 1.5*DamageM);
-    (\+isGreater(Tipe,TipeM),
+    (isGreater(Tipe,TipeM),
+    RealDamage is 0.5*DamageM);
+    (\+isGreater(TipeM,Tipe),
+    \+isGreater(Tipe,TipeM),
     RealDamage is DamageM)),!,
     write(RealDamage),
     write(' damage'),
     write(' to '),
     write(Nama),
     nl,
+    nl,
     NewCurrentNyawa is CurrentNyawa - RealDamage,
     ((NewCurrentNyawa =< 0,
-    retract(inventori(_,_,_,_,_,_)));
+    write(Nama),
+    write(' died.'));
     (NewCurrentNyawa > 0,
-    asserta(inventori(Nama,Tipe,Damage,NewCurrentNyawa)))).
-
+    asserta(inventori(Nama,Tipe,Damage,NewCurrentNyawa,_,_))),
+    printStatusEnemy,
+    nl,
+    printMyStatus),!.
+/*
+specialAttack :-*/
+    
     
