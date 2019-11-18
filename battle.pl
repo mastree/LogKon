@@ -87,7 +87,7 @@ printStatusEnemy :-
 printMyToke(Nama,Tipe,_,Nyawa,_,_) :-
     write(Nama),nl,
     write('Health : '),write(Nyawa),nl,
-    write('Type: '),write(Tipe),nl,nl.
+    write('Type: '),write(Tipe).
 
 printMyStatus :-
     write('Your Tokemon: '), nl,nl,
@@ -102,7 +102,7 @@ pick(X) :-
     nl,
     printStatusEnemy,nl,
     asserta(picked(X)),
-    printMyStatus, !.
+    printMyStatus,nl, !.
 
 pick(X) :-
     \+inventori(X,_,_,_,_,_),
@@ -155,6 +155,7 @@ attackM :-
     printMyStatus,
     nl,
     picked(X),
+    write('==================================================================='),nl,
     enemy(NamaM,TipeM,DamageM,_),
     write(NamaM),
     write(' dealt '),
@@ -200,7 +201,7 @@ specialAttack :-
     retract(enemy(NamaM,TipeM,DamageM,CurrentNyawaM)),
     SpecDamage is 3*Damage, 
     write(Nama),
-    write(' uses leaf blade!'),nl,
+    write(' uses special attack!'),nl,
     write('It was super effective!'),nl,
     ((isGreater(Tipe,TipeM),
     RealDamage is 1.5*SpecDamage);
