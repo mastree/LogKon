@@ -12,10 +12,19 @@
 */
 setNamaTipe(yuckmon, water).
 setNamaTipe(platypus, water).
+setNamaTipe(squidward, water).
+setNamaTipe(pepsiman, water).
+setNamaTipe(magikrap, water).
 setNamaTipe(bragamon, fire).
 setNamaTipe(apimon, fire).
+setNamaTipe(megumin, fire).
+setNamaTipe(ponyta, fire).
+setNamaTipe(plaeron, fire).
 setNamaTipe(daunmon, leaves).
 setNamaTipe(greenmon, leaves).
+setNamaTipe(cannabon, leaves).
+setNamaTipe(faithon, leaves).
+setNamaTipe(shbeve, leaves).
 
 currentInventoryLength(Length) :-
 	findall(A, inventori(A, _, _, _, _, _), ListLength),
