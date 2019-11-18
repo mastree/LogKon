@@ -238,7 +238,7 @@ capture :-
     currentInventoryLength(LengthNow),
     ((LengthNow =:= 6,
     write('You cannot capture another Tokemon! You have to drop one first.!'));
-    LengthNow < 6,
+    (LengthNow < 6,
     enemyDied(NamaC,TipeC,DamageC,_),
     retract(enemyDied(NamaC,TipeC,DamageC,_)),
     enemyMaxHP(NyawaC),
@@ -248,7 +248,7 @@ capture :-
     ((legendaryTokemon(NamaC,_,_,_,_,_,_,_),
     addInventori(NamaC,TipeC,DamageC,NyawaC,legendary));
     (\+legendaryTokemon(NamaC,_,_,_,_,_,_,_),
-    addInventori(NamaC,TipeC,DamageC,NyawaC,normal))), !.
+    addInventori(NamaC,TipeC,DamageC,NyawaC,normal))))), !.
 
 
 status :-
