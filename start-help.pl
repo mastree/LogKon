@@ -70,15 +70,15 @@ start :-
 	write('Rilamon'), nl,
 	write('Type : Fire'), nl,
 	write('HP : 3000'), nl,
-	write('Damage : 800'),
+	write('Damage : 800'), nl,
 	write('Harlimon'), nl,
 	write('Type : Water'), nl,
 	write('HP : 3000'), nl,
-	write('Damage : 800'),
+	write('Damage : 800'), nl,
 	write('Rinamon'), nl,
 	write('Type : Leaves'), nl,
 	write('HP : 3000'), nl,
-	write('Damage : 800'),
+	write('Damage : 800'),nl,
 	write('===================================='), nl,
 	write('Choose wisely : '), !.
 
@@ -87,7 +87,7 @@ rilamon :-
 
 rilamon :-
 	gameState(X), X == pick, write('You have picked Rilamon as your starter!'), nl,
-	addInventori('Rilamon',fire,800,3000,'Normal'),
+	addInventori(rilamon,fire,800,3000,'Normal'),
 	write('Now go outside there and catch some legendary tokemons.'), nl,
 	write('===================================='), nl,
 	retract(gameState(_)), init_map, map, !.
@@ -97,7 +97,7 @@ harlimon :-
 
 harlimon :-
 	gameState(X), X == pick, write('You have picked Harlimon as your starter!'), nl,
-	addInventori('Harlimon',water,800,3000,'Normal'),
+	addInventori(harlimon,water,800,3000,'Normal'),
 	write('Now go outside there and catch some legendary tokemons.'), nl,
 	write('===================================='), nl,
 	retract(gameState(_)), init_map, map, !.
@@ -107,7 +107,7 @@ rinamon :-
 
 rinamon :-
 	gameState(X), X == pick, write('You have picked Rinamon as your starter!'), nl,
-	addInventori('Rinamon',leaves,800,3000,'Normal'),
+	addInventori(rinamon,leaves,800,3000,'Normal'),
 	write('Now go outside there and catch some legendary tokemons.'), nl,
 	write('===================================='), nl,
 	retract(gameState(_)), init_map, map, !.

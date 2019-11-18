@@ -59,18 +59,18 @@ randTokemon(Nama, Tipe, Damage, Nyawa) :-
 	Tipe = T,
 	random(0, 100, Tier),
 	(Tier<80, 
-	random(1000, 5000, Hp);
+	random(2000, 4000, Hp);
 	Tier>79,
 	Tier<93, 
-	random(5000, 15000, Hp);
+	random(4000, 6000, Hp);
 	Tier>92, 
-	random(15000, 45000, Hp)),
+	random(6000, 8000, Hp)),
 	Nyawa is Hp,
 	(Tier<80, 
-	random(200, 1000, Atk);
+	random(400, 800, Atk);
 	Tier>79,
 	Tier<93, 
-	random(1000, 3000, Atk);
+	random(800, 1200, Atk);
 	Tier>92, 
-	random(3000, 9000, Atk)),
+	random(1200, 1600, Atk)),
 	Damage is Atk,!.
