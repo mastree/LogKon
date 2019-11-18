@@ -359,12 +359,12 @@ writeTerrain:-
 
 writeLegendary:-
 	forall(legendaryTokemon(A,B,C,D,E,F,G,H),(
-		write(legendaryTokemon(A,B,C,D,E,F,G,H)), nl
+		write(legendaryTokemon(A,B,C,D,E,F,G,H)), write('.'), nl
 	)), !.
 
 writeInventory:-
     forall(inventori(A,B,C,D,E,F),(
-		write(inventori(A,B,C,D,E,F)), nl
+		write(inventori(A,B,C,D,E,F)), write('.'), nl
 	)), !.
 
 /* Read dari file eksternal */

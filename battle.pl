@@ -187,8 +187,7 @@ attackM :-
     retract(sAttack(_)),
     asserta(gameState(kalah)),lose);
     (LengthNow > 0,
-    write('Your choice is died, pick another Tokemon!'),nl,
-    retract(sAttack(_)))));
+    write('Your choice is died, pick another Tokemon!'),nl)));
     (NewCurrentNyawa > 0,
     asserta(inventori(X,Tipe,Damage,NewCurrentNyawa,MaximumHP,Rarity)),
     printStatusEnemy,

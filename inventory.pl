@@ -40,7 +40,12 @@ addInventori(Nama, Tipe, Damage, Nyawa, Rarity) :-
 	asserta(inventori(Nama, Tipe, Damage, Nyawa, MaxHP, Rarity)),!.
 
 drop(Nama) :-
-	retract(inventori(Nama, _, _, _, _, _)),!.
+	\+inventori(Nama,_,_,_,_,_),
+	write('You don\'t have this tokemon!'), nl, !.
+
+drop(Nama) :-
+	retract(inventori(Nama, _, _, _, _, _)),
+	write(Nama), write(' has been dropped!'), nl, !.
 
 printStatus :-
 	write('Kisama no Tokemon :'),nl,nl,
