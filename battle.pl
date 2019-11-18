@@ -241,7 +241,10 @@ capture :-
     retract(enemyMaxHP(NyawaC)),
     write(NamaC),
     write(' is captured!'),
-    addInventori(NamaC,TipeC,DamageC,NyawaC,999).
+    ((legendaryTokemon(NamaC,_,_,_,_,_,_,_),
+    addInventori(NamaC,TipeC,DamageC,NyawaC,legendary));
+    (\+legendaryTokemon(NamaC,_,_,_,_,_,_,_),
+    addInventori(NamaC,TipeC,DamageC,NyawaC,normal))), !.
 
 
 status :-
