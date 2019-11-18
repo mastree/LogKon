@@ -8,6 +8,7 @@
 :- dynamic(mapStatus/1).
 :- dynamic(player/2).
 :- dynamic(gameState/1).
+:- dynamic(healstatus/1).
 /* gameState menerima string dengan pilihan:
     move : Lagi explore.
     battle : Lagi battle.
@@ -24,15 +25,31 @@ insideGym:-
 
 heal :-
     insideGym,
-    forall(inventori(Name,_,_,_,_,_), healTokemon(Name)), !.
+    \+healstatus(_),
+    forall(inventori(Name,_,_,_,_,_), healTokemon(Name)),
+    asserta(heal(1)), !.
 
 heal :-
-    write('Kamu sedang tidak di gym. Kamu tidak bisa melakukan aksi healing!'), nl, !.
+    healstatus(_),
+    write('You\'ve used your only chance to heal. No more for you!'),nl,nl,!.
+heal :-
+    \+insideGym,
+    write('You\'re currently not in Gym Center. You can only heal in Gym Center!'), nl,nl, !.
 
 healTokemon(Nama) :-
     retract(inventori(Nama,Tipe,Damage,_,MaxHP,Rarity)),
     NewNyawa is MaxHP,
     asserta(inventori(Nama,Tipe,Damage,NewNyawa,MaxHP,Rarity)), !.
+
+update_nearby :-
+    \+legendaryTokemon(_,_,_,_,_,_,_,_),
+    retract(gameState(_)),
+    asserta(gameState(menang)),
+    win, !.
+
+update_nearby :-
+    gameState(kalah),
+    lose, !.
 
 update_nearby :-
     player(X,Y),
@@ -149,7 +166,7 @@ printMapAll:-
 /* Implementasi Move */
 w :-
     \+gameState(move),
-    write('Kamu tidak bisa berpindah tempat saat ini!'),nl,!.
+    write('You\'re currently not able to move! Face your destiny!'),nl,!.
 w :-
     gameState(X), X == preBattle,
     write('You\'re encountering a tokemon. You can\'t move! Fight or run?'), nl, !.
@@ -160,7 +177,7 @@ w :-
     Ynew is Y-1,
     terrain(Xnew,Ynew,Isi),
 	isWall(Isi),
-	write('Jangan ke atas lagi lah coy!'),nl,!.
+	write('There\'s an obstacle there! You have to find your way around!'),nl,!.
 
 w :-
     ((enemyMaxHP(_),
@@ -171,11 +188,11 @@ w :-
 	NewY is Y-1,
 	write([X,NewY]),nl,
 	asserta(player(X,NewY)),
-	write('Anda bergerak ke arah utara'),nl,
+	write('You moved towards north.'),nl,
 	update_nearby, !.
 a :-
     \+gameState(move),
-    write('Kamu tidak bisa berpindah tempat saat ini!'),nl,!.
+    write('You\'re currently not able to move! Face your destiny!'),nl,!.
 a :-
     gameState(X), X == preBattle,
     write('You\'re encountering a tokemon. You can\'t move! Fight or run?'), nl, !.
@@ -186,7 +203,7 @@ a :-
     Ynew is Y,
     terrain(Xnew,Ynew,Isi),
 	isWall(Isi),
-	write('Jangan ke kiri lagi lah coy!'),nl,!.	
+	write('There\'s an obstacle there! You have to find your way around!'),nl,!.	
 
 a :-
     ((enemyMaxHP(_),
@@ -197,11 +214,11 @@ a :-
 	NewX is X-1,
 	write([NewX,Y]),nl,
 	asserta(player(NewX,Y)),
-	write('Anda bergerak ke arah barat'),nl,
+	write('You moved towards west.'),nl,
 	update_nearby, !.
 s :-
     \+gameState(move),
-    write('Kamu tidak bisa berpindah tempat saat ini!'),nl,!.
+    write('You\'re currently not able to move! Face your destiny!'),nl,!.
 s :-
     gameState(X), X == preBattle,
     write('You\'re encountering a tokemon. You can\'t move! Fight or run?'), nl, !.
@@ -212,7 +229,7 @@ s :-
     Ynew is Y+1,
     terrain(Xnew,Ynew,Isi),
 	isWall(Isi),
-	write('Jangan ke bawah lagi lah coy!'),nl,!.
+	write('There\'s an obstacle there! You have to find your way around!'),nl,!.
 
 s :-
     ((enemyMaxHP(_),
@@ -224,12 +241,12 @@ s :-
 	NewY is Y+1,
 	write([X,NewY]),nl,
 	asserta(player(X,NewY)),
-	write('Anda bergerak ke arah selatan'),nl,
+	write('You moved towards south.'),nl,
 	update_nearby, !.
 
 d :-
     \+gameState(move),
-    write('Kamu tidak bisa berpindah tempat saat ini!'),nl,!.
+    write('You\'re currently not able to move! Face your destiny!'),nl,!.
 
 d :-
     gameState(X), X == preBattle,
@@ -241,7 +258,7 @@ d :-
     Ynew is Y,
     terrain(Xnew,Ynew,Isi),
 	isWall(Isi),
-	write('Jangan ke kanan lagi lah coy!'),nl,!.	
+	write('There\'s an obstacle there! You have to find your way around!'),nl,!.	
 
 d :-
     ((enemyMaxHP(_),
@@ -253,10 +270,38 @@ d :-
 	NewX is X+1,
 	write([NewX,Y]),nl,
 	asserta(player(NewX,Y)),
-	write('Anda bergerak ke arah timur'),nl,
+	write('You moved towards east.'),nl,
 	update_nearby, !.
 
 
+/* win or lose */
+win :-
+    write('You did it! You\'ve defeated all of the Legendary Tokemons!'),nl,
+    write('As you can see from afar, Doctor Zomboss is headed towards you!'),nl,
+    write('.'),nl,
+    write('.'),nl,
+    write('.'),nl,
+    write('.'),nl,
+    write('.'),nl,
+    write('Now, Doctor Zomboss is right in front of you'),nl, nl,
+    write('\'Congratulations for your outstanding achievement!\', says Doctor Zomboss'),nl,nl,
+    write('As you\'ve heard that, a surge of happiness is running in your heart along with a big smile on your face'),nl,
+    write('Because you know,'),nl,
+    write('you'),nl,
+    write('have'),nl,
+    write('become'),nl,
+    write('THE VERY BEST LIKE NO ONE EVER WAS'),nl,nl,
+    quit, !.
+
+lose :-
+    write('You\'ve lost all your trusted companions!'),nl,
+    write('There\'s no other way for you to go on in this journey.'),nl,
+    write('This is the end of your journey.'),nl,
+    write('As you sit down on the ground and face your own failure,'),nl,
+    write('The thought suddenly reached your mind.'),nl,
+    write('Instead of becoming the very best,'),nl,
+    write('You have become the VERY WORST.'),nl,nl,
+    quit, !.
 /*
 loads(_) :-
 	gameMain(_),
@@ -265,7 +310,7 @@ loads(_) :-
 
 loads(FileName):-
 	\+file_exists(FileName),
-	write('File tidak ditemukan!'), nl, !.
+	write('File not found!'), nl, !.
 loads(FileName):-
 	open(FileName, read, Str),
     read_file_lines(Str,Lines),
@@ -281,6 +326,7 @@ save(_):-
 */
 
 save(FileName):-
+    gameState('move'),
     tell(FileName),
         gameState(A),
         write(gameState(A)),write('.'),nl,
@@ -297,8 +343,13 @@ save(FileName):-
 		writeTerrain,
         writeLegendary,
         writeInventory,
+        healstatus(Eel),
+        write(healstatus(Eel)),write('.'),nl,
 	told, !.
 
+save(_):-
+    \+gameState('move'),
+    write('You can\'t save yet!'),nl,nl,!.
 
 writeTerrain:-
 	\+terrain(_,_,_),
@@ -366,6 +417,13 @@ retractTerrain :-
 retractTerrain :-
     retract(terrain(_,_,_)),
     retractTerrain, !.
+
+retractInventory :-
+    \+inventori(_,_,_,_,_,_), !.
+
+retractInventory :-
+    retract(inventori(_,_,_,_,_,_)),
+    retractInventory, !.
 quit :-
     retract(lebarPeta(_)),
     retract(tinggiPeta(_)),
@@ -374,4 +432,6 @@ quit :-
     retract(gymPos(_,_)),
     retract(mapStatus(_)),
     retract(player(_,_)),
-    retract(gameState(_)), !.
+    retract(gameState(_)),
+    retractInventory,
+    retract(healstatus(_)), !.

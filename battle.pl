@@ -43,6 +43,7 @@ startbattleLeg :-
     legendaryTokemon(Nama,Tipe,Damage,Nyawa,_,_,_,_),
     asserta(enemy(Nama,Tipe,Damage,Nyawa)),
     asserta(enemyMaxHP(Nyawa)),
+    asserta(sAttack(0)),
     write('A wild Legendary Tokemon appears!'),nl,
     write('Fight or Run?').
 

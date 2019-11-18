@@ -1,13 +1,11 @@
-:- include('battle.pl').
-:- include('move.pl').
 :- include('petaToke.pl').
 
 :- dynamic(gameState/1).
 
-:- discontiguous init_game/0.
+/*:- discontiguous init_game/0.
 :- discontiguous help/0.
 :- discontiguous start/0.
-:- discontiguous map/0.
+:- discontiguous map/0. */
 
 init_game :-
 	asserta(gameState(main)),
@@ -122,4 +120,3 @@ map :-
 	gameState(X), X == move,
 	printMapAll, !.
 
-:- init_game, !.
