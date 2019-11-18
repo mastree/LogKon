@@ -45,12 +45,14 @@ startbattleLeg :-
     asserta(enemyMaxHP(Nyawa)),
     asserta(sAttack(0)),
     write('A wild Legendary Tokemon appears!'),nl,
+    write(Nama),write(' : hoho, mukatte kuru no ka?'),nl,
     write('Fight or Run?').
 
 run :-
     gameState(X), X \== preBattle, write('Illegal command.'), nl, !.
 
 run :- 
+    write('You : Nigerundayo'),nl,
     random(1,101,X),
     ((X < 71,
     write('You failed to run!'),
@@ -130,6 +132,7 @@ attack :-
     write(Nama),nl,
     NewCurrentNyawaM is CurrentNyawaM - RealDamage,
     ((NewCurrentNyawaM =< 0,
+    write('You: Yare yare daze'),nl,
     write(Nama),
     write(' faints! Do you want to capture '),write(Nama),write('?'),
     write(' capture/0 to capture '),write(Nama),write(', otherwise move away.'),
@@ -210,6 +213,7 @@ specialAttack :-
     nl,
     NewCurrentNyawaM is CurrentNyawaM - RealDamage,
     ((NewCurrentNyawaM =< 0,
+    write('You: Yare yare daze'),nl,
     write(NamaM),
     write(' faints! Do you want to capture '),write(NamaM),write('?'),
     write(' capture/0 to capture '),write(NamaM),write(', otherwise move away.'),
