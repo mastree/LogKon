@@ -319,13 +319,6 @@ loads(FileName):-
     assertaList(Lines),
     write('Load game berhasil!'),nl, !.
 
-/*
-save(_):-
-	\+gameMain(_),
-	write('Command ini hanya bisa dipakai setelah game dimulai.'), nl,
-	write('Gunakan command "start." untuk memulai game.'), nl, !.
-*/
-
 save(FileName):-
     gameState('move'),
     tell(FileName),
@@ -341,6 +334,8 @@ save(FileName):-
         write(tinggiPeta(Tinggi)),write('.'),nl,
         mapStatus(Stat),
         write(mapStatus(Stat)),write('.'),nl,
+        maxInventori(Minv),
+        write(maxInventori(Minv)),write('.'),nl,
 		writeTerrain,
         writeLegendary,
         writeInventory,

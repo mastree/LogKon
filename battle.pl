@@ -89,7 +89,7 @@ printStatusEnemy :-
 printMyToke(Nama,Tipe,_,Nyawa,_,_) :-
     write(Nama),nl,
     write('Health : '),write(Nyawa),nl,
-    write('Type: '),write(Tipe).
+    write('Type: '),write(Tipe),nl,nl.
 
 printMyStatus :-
     write('Your Tokemon: '), nl,nl,
@@ -111,8 +111,7 @@ pick(X) :-
     write('You do not have that Tokemon!'), !.
 
 pick(X) :-
-    retract(picked(_)), pick(X),
-    attackM, !.
+    retract(picked(_)), pick(X), !.
 
 damage(X) :-
     inventori(X,_,Y,_,_,_),!,
@@ -140,6 +139,7 @@ attack :-
     write(Nama),
     write(' faints! Do you want to capture '),write(Nama),write('?'),
     write(' capture/0 to capture '),write(Nama),write(', otherwise move away.'),
+    retract(sAttack(_)),
     retract(gameState(_)),
     ((legendaryTokemon(Nama,_,_,_,_,_,_,_),
     retract(legendaryTokemon(Nama,_,_,_,_,_,_,_)));
@@ -200,6 +200,7 @@ specialAttack :-
     (sAttack(0),
     retract(sAttack(_)),
     asserta(sAttack(1)),
+    picked(Nama),
     inventori(Nama,Tipe,Damage,_,_,_),
     retract(enemy(NamaM,TipeM,DamageM,CurrentNyawaM)),
     SpecDamage is 3*Damage, 
@@ -223,9 +224,9 @@ specialAttack :-
     write(' capture/0 to capture '),write(NamaM),write(', otherwise move away.'),
     retract(sAttack(_)),
     retract(gameState(_)),
-    ((legendaryTokemon(Nama,_,_,_,_,_,_,_),
-    retract(legendaryTokemon(Nama,_,_,_,_,_,_,_)));
-    (\+legendaryTokemon(Nama,_,_,_,_,_,_,_))),
+    ((legendaryTokemon(NamaM,_,_,_,_,_,_,_),
+    retract(legendaryTokemon(NamaM,_,_,_,_,_,_,_)));
+    (\+legendaryTokemon(NamaM,_,_,_,_,_,_,_))),
     retract(picked(_)),
     asserta(enemyDied(NamaM, TipeM, DamageM, CurrentNyawaM)),
     asserta(gameState(move)));
