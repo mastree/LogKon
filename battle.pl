@@ -34,16 +34,19 @@ startbattle :-
     asserta(enemy(Nama,Tipe,Damage,Nyawa)),
     asserta(enemyMaxHP(Nyawa)),
     asserta(sAttack(0)),
+    printStatusEnemy,
     write('A wild Tokemon appears!'),nl,
     write('Fight or Run?').
 
 startbattleLeg :-
+    player(X,Y),
     retract(gameState(_)),
     asserta(gameState(preBattle)),
-    legendaryTokemon(Nama,Tipe,Damage,Nyawa,_,_,_,_),
+    legendaryTokemon(Nama,Tipe,Damage,Nyawa,_,_,X,Y),
     asserta(enemy(Nama,Tipe,Damage,Nyawa)),
     asserta(enemyMaxHP(Nyawa)),
     asserta(sAttack(0)),
+    printStatusEnemy,
     write('A wild Legendary Tokemon appears!'),nl,
     write('Fight or Run?').
 
@@ -117,6 +120,7 @@ attack :-
     write('You dealt '),
     picked(X),
     inventori(X,Tipe,Damage,_,_,_),
+    enemy(Nama,TipeM,DamageM,CurrentNyawaM),
     retract(enemy(Nama,TipeM,DamageM,CurrentNyawaM)),
     ((isGreater(Tipe,TipeM),
     RealDamage is 1.5*Damage);
@@ -172,20 +176,19 @@ attackM :-
     ((NewCurrentNyawa =< 0,
     write(X),
     write(' died.'), nl,
-    drop(X),
     currentInventoryLength(LengthNow),
-    (((LengthNow == 0),
+    ((LengthNow =:= 0,
     retract(gameState(_)),
     retract(enemy(_,_,_,_)),
     retract(sAttack(_)),
-    asserta(gameState(kalah)));
+    asserta(gameState(kalah)),lose);
     (LengthNow > 0,
-    write('Your choice is died, pick another Tokemon!'),nl),!));
+    write('Your choice is died, pick another Tokemon!'),nl)));
     (NewCurrentNyawa > 0,
-    asserta(inventori(X,Tipe,Damage,NewCurrentNyawa,_,_))),
+    asserta(inventori(X,Tipe,Damage,NewCurrentNyawa,_,_)),
     printStatusEnemy,
     nl,
-    printMyStatus),!.
+    printMyStatus)),!.
 
 specialAttack :-
     ((sAttack(1),
@@ -223,10 +226,12 @@ specialAttack :-
     asserta(gameState(move)));
     (NewCurrentNyawaM > 0,
     asserta(enemy(NamaM,TipeM,DamageM,NewCurrentNyawaM)),
-    attackM)),!)),!.
+    attackM)))),!.
   
 capture :-
+    enemyDied(NamaC,TipeC,DamageC,_),
     retract(enemyDied(NamaC,TipeC,DamageC,_)),
+    enemyMaxHP(NyawaC),
     retract(enemyMaxHP(NyawaC)),
     write(NamaC),
     write(' is captured!'),

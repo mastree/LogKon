@@ -7,7 +7,6 @@
 :- dynamic(gymPos/2). /* (i,j) = (x,y) */
 :- dynamic(mapStatus/1).
 :- dynamic(player/2).
-:- dynamic(gameState/1).
 :- dynamic(healstatus/1).
 /* gameState menerima string dengan pilihan:
     move : Lagi explore.
@@ -25,12 +24,13 @@ insideGym:-
 
 heal :-
     insideGym,
-    \+healstatus(_),
+    \+healstatus(1),
+    retract(healstatus(0)),
     forall(inventori(Name,_,_,_,_,_), healTokemon(Name)),
-    asserta(heal(1)), !.
+    asserta(healstatus(1)), !.
 
 heal :-
-    healstatus(_),
+    healstatus(1),
     write('You\'ve used your only chance to heal. No more for you!'),nl,nl,!.
 heal :-
     \+insideGym,
@@ -79,6 +79,7 @@ init_map :-
     asserta(mapStatus(1)),
     generateTerrain,
     asserta(gameState(move)),
+    asserta(healstatus(0)),
     !.
  
 /*isMapAset(G).*/
@@ -121,8 +122,8 @@ generateTerrain:-
     L2x is L2xtm, L2y is L2ytm+1),
 */
 
-    asserta(legendaryTokemon('rinalmon', 'fire', 14000, 135180, 135180, 'Legendary',Lx,Ly)),
-	asserta(legendaryTokemon('sangemon', 'water', 15000, 135171, 135171, 'Legendary',L2x,L2y)),
+    asserta(legendaryTokemon('rinalmon', 'fire', 2000, 15180, 15180, 'Legendary',Lx,Ly)),
+	asserta(legendaryTokemon('sangemon', 'water', 2600, 15171, 15171, 'Legendary',L2x,L2y)),
 
     forall(between(0,Yp,J), (
         asserta(terrain(0,J,'X')),
