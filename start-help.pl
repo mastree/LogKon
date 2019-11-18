@@ -1,7 +1,5 @@
 :- include('petaToke.pl').
 
-:- dynamic(gameState/1).
-
 /*:- discontiguous init_game/0.
 :- discontiguous help/0.
 :- discontiguous start/0.

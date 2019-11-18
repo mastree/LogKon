@@ -162,7 +162,7 @@ attackM :-
     enemy(NamaM,TipeM,DamageM,_),
     write(NamaM),
     write(' dealt '),
-    retract(inventori(X,Tipe,Damage,CurrentNyawa,_,_)),
+    retract(inventori(X,Tipe,Damage,CurrentNyawa,MaximumHP,Rarity)),
     ((isGreater(TipeM,Tipe),
     RealDamage is 1.5*DamageM);
     (isGreater(Tipe,TipeM),
@@ -190,7 +190,7 @@ attackM :-
     write('Your choice is died, pick another Tokemon!'),nl,
     retract(sAttack(_)))));
     (NewCurrentNyawa > 0,
-    asserta(inventori(X,Tipe,Damage,NewCurrentNyawa,_,_)),
+    asserta(inventori(X,Tipe,Damage,NewCurrentNyawa,MaximumHP,Rarity)),
     printStatusEnemy,
     nl,
     printMyStatus)),!.

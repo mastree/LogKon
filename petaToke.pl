@@ -27,6 +27,7 @@ heal :-
     \+healstatus(1),
     retract(healstatus(0)),
     forall(inventori(Name,_,_,_,_,_), healTokemon(Name)),
+    write('All of your tokemons have been healed. Good luck!'),nl,nl,
     asserta(healstatus(1)), !.
 
 heal :-
