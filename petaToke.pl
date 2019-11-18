@@ -16,7 +16,7 @@
     menang : Udah menang.
     kalah : Udah kalah.
 */
-:- dynamic(enemyMaxHP/1).
+/*:- dynamic(enemyMaxHP/1).*/
 
 insideGym:-
     player(X,Y),

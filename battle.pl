@@ -244,7 +244,8 @@ capture :-
     addInventori(NamaC,TipeC,DamageC,NyawaC,999).
 
 
-    
+status :-
+    printMyStatus, !.
 
 
 
