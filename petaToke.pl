@@ -90,7 +90,7 @@ isWall('X').
 printMap(X,Y) :-
     player(X,Y), \+ (gymPos(X,Y)), !, write('P').
 printMap(X,Y) :-
-    terrain(X,Y,Isi), write(Isi).
+    (terrain(X,Y,Isi), Isi == 'L', write('-'));(terrain(X,Y,Isi), Isi \== 'L', write(Isi)).
  
 generateTerrain:-
     lebarPeta(L),
