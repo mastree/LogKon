@@ -132,7 +132,7 @@ attack :-
     write(RealDamage),
     write(' damage '),
     write('to '),
-    write(Nama),nl,
+    write(Nama),nl,nl,
     NewCurrentNyawaM is CurrentNyawaM - RealDamage,
     ((NewCurrentNyawaM =< 0,
     write('You: "Yare yare daze"'),nl,
@@ -158,7 +158,7 @@ attackM :-
     printMyStatus,
     nl,
     picked(X),
-    write('==================================================================='),nl,
+    write('==================================================================='),nl,nl,
     enemy(NamaM,TipeM,DamageM,_),
     write(NamaM),
     write(' dealt '),
@@ -198,15 +198,15 @@ specialAttack :-
     ((sAttack(1),
     write('Special attacks can only be used once per battle!'),nl);
     (sAttack(0),
+    picked(Nama),
     retract(sAttack(_)),
     asserta(sAttack(1)),
-    picked(Nama),
     inventori(Nama,Tipe,Damage,_,_,_),
     retract(enemy(NamaM,TipeM,DamageM,CurrentNyawaM)),
     SpecDamage is 3*Damage, 
     write(Nama),
     write(' uses special attack!'),nl,
-    write('It was super effective!'),nl,
+    write('It was super effective!'),nl,nl,
     ((isGreater(Tipe,TipeM),
     RealDamage is 1.5*SpecDamage);
     (isGreater(TipeM,Tipe),
@@ -235,14 +235,17 @@ specialAttack :-
     attackM)))),!.
   
 capture :-
+    currentInventoryLength(LengthNow),
+    ((LengthNow =:= 6,
+    write('You cannot capture another Tokemon! You have to drop one first.!'));
+    LengthNow < 6,
     enemyDied(NamaC,TipeC,DamageC,_),
     retract(enemyDied(NamaC,TipeC,DamageC,_)),
     enemyMaxHP(NyawaC),
     retract(enemyMaxHP(NyawaC)),
     write(NamaC),
     write(' is captured!'),
-    addInventori(NamaC,TipeC,DamageC,NyawaC,999).
-
+    addInventori(NamaC,TipeC,DamageC,NyawaC,'Normal')),!.
 
 status :-
     printMyStatus, !.
